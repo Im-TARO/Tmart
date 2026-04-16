@@ -13,7 +13,7 @@
 
 ## :pushpin: Overview
 
-Tmart is a simulated retail (grocey) data project that similates the backend database of a small grocery and household goods store.
+Tmart is a simulated retail (grocery) data project that simulates the backend database of a small grocery and household goods store
 
 ## :dart: Objectives
 
