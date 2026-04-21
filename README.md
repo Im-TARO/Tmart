@@ -119,7 +119,12 @@ LIMIT 5;
 
 </div>
 
-## :chart: Analysis (work in progress)
+## :flashlight: Examine the Data (work in progress)
+
+### Customers
+
+<details>
+<summary>Expand to view details.</summary>
 
 ```sql
 -- num of customers and avg age in each county/city
@@ -157,6 +162,87 @@ ORDER BY active_customers DESC,
 | Wake | Holly Springs | 8 | 58 | 3 | 44 |
 | Harnett | Lillington | 8 | 56 | 1 | 80 |
 | Harnett | Dunn | 7 | 52 | 4 | 60 |
+
+![Age Distribution](images/AgeDistributionbyCounty.jpg)
+</details>
+
+### Products
+
+<details>
+<summary>Expand to view details.</summary>
+
+```sql
+SELECT c.name category,
+       s.name subcategory,
+       sum(is_active) num_active_products,
+       count(DISTINCT sku) num_skus,
+       count(DISTINCT brand) num_brands
+FROM products_categories c
+JOIN products_subcategories s ON c.category_id = s.category_id
+JOIN products p ON s.subcategory_id = p.subcategory_id
+WHERE p.is_active = 1
+GROUP BY 1,
+         2
+ORDER BY 1,
+         2
+```
+
+| category | subcategory | num_active_products | num_skus | num_brands |
+| -- | -- | --: | --: | --: |
+| Baby and Childcare | Bathing and Skin Care | 160 | 160 | 10 |
+| Baby and Childcare | Beverages | 132 | 132 | 11 |
+| Baby and Childcare | Bottles and Cups | 140 | 140 | 10 |
+| Baby and Childcare | Diapers and Wipes | 160 | 160 | 10 |
+| Baby and Childcare | Food and Formula | 143 | 143 | 11 |
+| Baby and Childcare | Health & Wellnes | 80 | 80 | 10 |
+| Baby and Childcare | Toys | 180 | 180 | 10 |
+| Food and Beverages | Baked Goods | 419| 419 | 11 |
+| Food and Beverages | Breakfast and Cereal | 291 | 291 | 11 |
+| Food and Beverages | Coffee | 252 | 252 | 11 |
+| Food and Beverages | Dairy | 543 | 543 | 11 |
+| Food and Beverages | Juice | 342 | 342 | 11 |
+| Food and Beverages | Meat | 533 | 533 | 11 |
+| Food and Beverages | Pantry | 599 | 599 | 11 |
+| Food and Beverages | Produce | 542 | 542 | 11 |
+| Food and Beverages | Snacks | 526 | 526 | 11 |
+| Food and Beverages | Soda | 442 | 442 | 11 |
+| Food and Beverages | Tea | 154 | 154 | 11 |
+| Food and Beverages | Water | 165 | 165 | 11 |
+| Health and Wellness Products | Allergy and Sinus | 190 | 190 | 10 |
+| Health and Wellness Products | Cold and Flu | 180 | 180 | 10 |
+| Health and Wellness Products | First Aid | 170 | 170 | 10 |
+| Health and Wellness Products | Pain Relief | 200 | 200 | 10 |
+| Health and Wellness Products | Vitamins and Supplements | 210 | 210 | 10 |
+| Household Goods and Cleaning Products | Air Fresheners | 286 | 286 | 11 |
+| Household Goods and Cleaning Products | Cleaning Supplies | 286 | 286 | 11 |
+| Household Goods and Cleaning Products | Disposable Tableware | 174 | 174 | 11 |
+| Household Goods and Cleaning Products | Food Storages and Wraps | 220 | 220 | 11 |
+| Household Goods and Cleaning Products | Laundry | 198 | 198 | 11 |
+| Household Goods and Cleaning Products | Paper Products | 189 | 189 | 11 |
+| Household Goods and Cleaning Products | Trash Bags | 176 | 176 | 11 |
+| Personal Care and Beauty | Bath and Body | 220 | 220 | 11 |
+| Personal Care and Beauty | Deodorant | 160 | 160 | 10 |
+| Personal Care and Beauty | Hair Care | 210 | 210 | 10 |
+| Personal Care and Beauty | Oral Care | 230 | 230 | 10 |
+| Personal Care and Beauty | Skin Care | 210 | 210 | 10 |
+| Pet Care Products | Birds | 100 | 100 | 10 |
+| Pet Care Products | Cats | 213 | 213 | 10 |
+| Pet Care Products | Dogs | 215 | 215 | 10 |
+| Pet Care Products | Fish | 160 | 160 | 10 |
+
+![Active Products](images/ActiveProducts.jpg)
+
+</details>
+
+### Orders
+
+<details>
+<summary>Expand to view details.</summary>
+
+![coming soon](images/torn_coming_soon.jpg)
+[Designed by Freepik](www.freepik.com)
+
+</details>
 
 <!--
 ## :window: Views
