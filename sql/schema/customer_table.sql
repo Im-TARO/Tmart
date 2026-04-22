@@ -6,6 +6,7 @@ CREATE TABLE customers(
   customer_id INT AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
+  gender CHAR(1) DEFAULT NULL,
   phone_number VARCHAR(12) DEFAULT NULL,
   email VARCHAR(255) DEFAULT NULL,
   address VARCHAR(200) DEFAULT NULL,

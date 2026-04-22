@@ -119,6 +119,37 @@ LIMIT 5;
 
 </div>
 
+`tmart.customer.gender` - add gender to the customer profile
+
+<details>
+<summary>Expand to view details.</summary>
+
+```sql
+ALTER TABLE tmart.customers ADD COLUMN gender CHAR(1) NULL AFTER last_name;
+
+SELECT DISTINCT first_name,
+                gender
+FROM customers;
+
+
+UPDATE customers
+SET gender = 'M'
+WHERE first_name IN ('Andrew', 'Charles', 'Christopher', 'Daniel',
+                     'David', 'James', 'Jason', 'John', 'Joseph',
+                     'Liam', 'Matthew', 'Michael', 'Randy',
+                     'Richard', 'Robert', 'Thomas', 'William');
+
+
+UPDATE customers
+SET gender = 'F'
+WHERE first_name NOT IN ('Andrew', 'Charles', 'Christopher', 'Daniel',
+                         'David', 'James', 'Jason', 'John', 'Joseph',
+                         'Liam', 'Matthew', 'Michael', 'Randy',
+                         'Richard', 'Robert', 'Thomas', 'William');
+```
+
+</details>  
+
 ## :flashlight: Examine the Data (work in progress)
 
 ### Customers
@@ -162,6 +193,8 @@ ORDER BY active_customers DESC,
 | Wake | Holly Springs | 8 | 58 | 3 | 44 |
 | Harnett | Lillington | 8 | 56 | 1 | 80 |
 | Harnett | Dunn | 7 | 52 | 4 | 60 |
+
+![Age Gender](images/AgeGenderDistribution.jpg)
 
 ![Age Distribution](images/AgeDistributionbyCounty.jpg)
 </details>
@@ -230,7 +263,7 @@ ORDER BY 1,
 | Pet Care Products | Dogs | 215 | 215 | 10 |
 | Pet Care Products | Fish | 160 | 160 | 10 |
 
-![Active Products](images/ActiveProducts.jpg)
+![ProductCategories](images/ProductCategories.jpg)
 
 </details>
 
