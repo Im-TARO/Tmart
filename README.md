@@ -63,61 +63,170 @@ I reviewed and tailored the scripts to meet my needs.
 
 ## :wrench: Data Cleaning (work in progress)
 
-`tmart.orders.total_amount` - When an order contains  canceled items, the total amount may be incorrect
+`tmart.orders.total_amount` - When an order contains **canceled** item line(s), the total amount is incorrect  
+`tmart.orders.delivery_cost` - Delivery charges may need to be revised for orders that include **canceled** item lines
 
 <details>
 <summary>Expand to view details.</summary>
 
+### Business rule for Delivery Cost
+
+| Order Amount | Delivery Cost | Loyalty Members |
+| -- | :--: | :--: |
+| Orders >= $75 | Free | Free |
+| Orders >= $50 | $5 | Free |
+| Orders >= $25 | 10 | $5 |
+| Orders < $25 | $25 | $10 |
+
 ```sql
-WITH cte_canceled AS
-  (SELECT order_id,
-          sum(line_total) canceled_amt
-   FROM order_items
-   WHERE item_status = 'Canceled'
-   GROUP BY order_id),
-     cte_not_canceled AS
-  (SELECT order_id,
-          sum(line_total) not_canceled_amt,
-          group_concat(DISTINCT item_status) not_canceled_status
-   FROM order_items
-   WHERE item_status != 'Canceled'
-   GROUP BY order_id)
-SELECT a.order_id,
-       a. canceled_amt,
-       coalesce(b.not_canceled_amt, 0) not_canceled_amt,
-       not_canceled_status,
-       o.total_amount
-FROM cte_canceled a
-LEFT JOIN cte_not_canceled b ON a.order_id = b.order_id
-JOIN orders o ON a.order_id = o.order_id
-LIMIT 5;
+-- Select orders canceled items lines
+
+WITH canceled_items AS
+  (SELECT DISTINCT oi.order_id,
+                   o.total_amount,
+                   o.delivery_cost,
+                   o.customer_id,
+                   c.loyalty_member
+   FROM order_items oi
+   JOIN orders o ON oi.order_id = o.order_id
+   JOIN customers c ON o.customer_id = c.customer_id
+   WHERE oi.item_status = 'Canceled'),
+     new_totals AS
+  (SELECT i.order_id,
+          group_concat(DISTINCT i.item_status) statuses,
+          SUM(CASE
+                  WHEN item_status != 'Canceled' THEN line_total
+                  ELSE 0
+              END) AS new_total
+   FROM order_items i
+   JOIN canceled_items ci ON i.order_id = ci.order_id
+   GROUP BY 1)
+SELECT n.order_id,
+       n.statuses,
+       c.total_amount old_total,
+       n.new_total,
+       c.loyalty_member,
+       c.delivery_cost old_delivery_cost,
+       CASE
+           WHEN n.new_total = 0 THEN 0
+           WHEN c.loyalty_member THEN CASE
+                                          WHEN n.new_total >= 50 THEN 0
+                                          WHEN n.new_total >= 25 THEN 5
+                                          ELSE 10
+                                      END
+           ELSE CASE
+                    WHEN n.new_total >= 75 THEN 0
+                    WHEN n.new_total >= 50 THEN 5
+                    WHEN n.new_total >= 25 THEN 10
+                    ELSE 25
+                END
+       END new_delivery_cost
+FROM new_totals n
+JOIN canceled_items c ON n.order_id = c.order_id
+LIMIT 15;
 ```
 
-| order_id | canceled_amt | not_canceled_amt | not_canceled_status | total_amount |
-| -- | --: | --: | -- | --: |
-| 1 | 8.78 | 206.02 | Delivered,Shipped | 214.80 |
-| 6 | 32.64 | 99.89 | Delivered,Shipped | 132.53 |
-| 9 | 7.40 | 0.00 | NULL | 7.40 |
-| 10 | 38.95 | 0.00 | NULL | 38.95 |
-| 11 | 26.75 | 145.09 | Delivered | 171.84 |
+| order_id | statuses | old_total | new_total | loyalty_member | old_delivery_cost | new_delivery_cost |
+| -- | -- | --: | --: | -- | --: | --: |
+| 1 | Canceled,Delivered,Shipped | 214.80 | 206.02 | 1 | 0.00 | 0 |
+| 6 | Canceled,Delivered,Shipped | 132.53 | 99.89 | 1 | 0.00 | 0 |
+| 9 | Canceled | 7.40 | 0.00 | 1 | 25.00 | 0 |
+| 10 | Canceled | 38.95 | 0.00 | 1 | 10.00 | 0 |
+| 11 | Canceled,Delivered | 171.84 | 145.09 | 1 | 0.00 | 0 |
+| 14 | Canceled,Delivered | 245.90 | 228.11 | 1 | 0.00 | 0 |
+| 15 | Canceled,Delivered | 74.89 | 26.85 | 1 | 5.00 | 5 |
+| 17 | Canceled,Delivered,Shipped | 105.37 | 82.15 | 1 | 0.00 | 0 |
+| 18 | Canceled,Delivered,Shipped | 86.71 | 72.85 | 0 | 0.00 | 5 |
+| 21 | Canceled,Delivered | 109.87 | 71.56 | 1 | 0.00 | 0 |
+| 24 | Canceled,Delivered,Shipped | 64.40 | 41.04 | 0 | 5.00 | 10 |
+| 25 | Canceled,Delivered | 42.70 | 33.46 | 0 | 10.00 | 10 |
+| 28 | Canceled,Delivered,Shipped | 222.62 | 216.31 | 1 | 0.00 | 0 |
+| 29 | Canceled,Delivered | 38.29 | 31.93 | 1 | 10.00 | 5 |
+| 31 | Canceled,Delivered,Shipped | 295.28 | 253.68 | 0 | 0.00 | 0 |
 
-*total_amount is wrong on the orders with canceled items, should be the same as the not_canceled_amt*
+### Stored Procedure
+
+create resuable procedure to fix order totals and delivery fees
+
+```sql
+DELIMITER $$
+
+CREATE PROCEDURE fix_order_totals()
+comment 'Procedure to fix the order total_amount and delivery_cost when items are canceled: CALL fix_order_totals();'
+BEGIN
+
+    UPDATE orders o
+    JOIN (
+    with canceled as (select distinct i.order_id, c.loyalty_member from order_items i join orders o on i.order_id = o.order_id join customers c on o.customer_id = c.customer_id where i.item_status = 'Canceled')
+        SELECT
+            o.order_id, c.loyalty_member,
+            SUM(CASE
+                WHEN o.item_status != 'Canceled' THEN line_total
+                ELSE 0
+            END) AS new_total
+        FROM order_items o  join canceled c on o.order_id = c.order_id
+        GROUP BY 1,2
+    ) t ON o.order_id = t.order_id
+    SET
+        o.total_amount = ROUND(t.new_total, 2),
+        o.delivery_cost =
+       CASE
+           WHEN t.new_total = 0 THEN 0
+           WHEN t.loyalty_member THEN CASE
+                                          WHEN t.new_total >= 50 THEN 0
+                                          WHEN t.new_total >= 25 THEN 5
+                                          ELSE 10
+                                      END
+           ELSE CASE
+                    WHEN t.new_total >= 75 THEN 0
+                    WHEN t.new_total >= 50 THEN 5
+                    WHEN t.new_total >= 25 THEN 10
+                    ELSE 25
+                END
+       END;
+
+END $$
+
+DELIMITER ;
+```
+
+### Validation Query
+
+```sql
+-- check order.total_amount and order.delivery_cost columns
+SELECT o.order_id,
+       o.total_amount,
+       SUM(CASE
+               WHEN oi.item_status != 'Canceled' THEN oi.line_total
+               ELSE 0
+           END) AS expected_total,
+       o.delivery_cost,
+       CASE
+           WHEN o.total_amount = 0 THEN 0
+           WHEN c.loyalty_member THEN CASE
+                                          WHEN o.total_amount >= 50 THEN 0
+                                          WHEN o.total_amount >= 25 THEN 5
+                                          ELSE 10
+                                      END
+           ELSE CASE
+                    WHEN o.total_amount >= 75 THEN 0
+                    WHEN o.total_amount >= 50 THEN 5
+                    WHEN o.total_amount >= 25 THEN 10
+                    ELSE 25
+                END
+       END expected_delivery_cost
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+JOIN order_items oi ON o.order_id = oi.order_id
+GROUP BY o.order_id
+HAVING o.total_amount != expected_total
+OR o.delivery_cost != expected_delivery_cost;
+```
+
+**0 row(s) returned**
 
 </details>  
-<br>
-
-`tmart.orders.delivery_cost` - Delivery charges may need to be revised for orders that include  canceled items.  
-
-<div align="center">
-
-| Order Amount | Delivery Cost |
-| -- | :--: |
-| Orders >= $75 | Free |
-| Orders >= $50 | $5 |
-| Orders >= $25 | 10 |
-| Orders < $25 | $25 |
-
-</div>
+</br>
 
 `tmart.customer.gender` - add gender to the customer profile
 
