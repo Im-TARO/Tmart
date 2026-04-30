@@ -15,6 +15,12 @@
 
 Tmart is a simulated retail (grocery) data project that simulates the backend database of a small grocery and household goods store
 
+### :link: Links
+
+[![Tableau](https://go-skill-icons.vercel.app/api/icons?i=tableau&theme=dark)](https://public.tableau.com/views/Tmart/Sheet1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+[![LinkedIn](https://skillicons.dev/icons?i=linkedin&theme=dark&perline=15)](https://www.linkedin.com/in/robinsontd/)
+[![GitHub](https://skillicons.dev/icons?i=github&theme=dark&perline=15)](https://github.com/Im-TARO)
+
 ## :dart: Objectives
 
 - Design a scalable retail database schema
@@ -63,7 +69,7 @@ I reviewed and tailored the scripts to meet my needs.
 
 ## :wrench: Data Cleaning (work in progress)
 
-`tmart.orders.total_amount` - When an order contains **canceled** item line(s), the total amount is incorrect  
+`tmart.orders.total_amount` - When an order contains **canceled** item line(s), the total amount was incorrect  
 `tmart.orders.delivery_cost` - Delivery charges may need to be revised for orders that include **canceled** item lines
 
 <details>
@@ -381,9 +387,71 @@ ORDER BY 1,
 <details>
 <summary>Expand to view details.</summary>
 
+```sql
+WITH cte_years AS
+   (SELECT year(o.order_date) yr,
+           c.county,
+           sum(total_amount + delivery_cost) tot_order_amount
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    WHERE year(order_date) < year(sysdate())
+    GROUP BY 1,
+             2),
+cte_compare AS
+   (SELECT yr,
+           county,
+           tot_order_amount current_year_amount,
+           lag(tot_order_amount) over(PARTITION BY county ORDER BY yr) previous_year_amount,
+           tot_order_amount 
+                - lag(tot_order_amount) over(PARTITION BY county ORDER BY yr) YoY_order_amount_change
+    FROM cte_years)
+SELECT yr,
+       county,
+       current_year_amount total_order_amount,
+       YoY_order_amount_change,
+       ((current_year_amount - previous_year_amount)/previous_year_amount) * 100 YoY_growth
+FROM cte_compare ;
+```
+
+| yr | county | total_order_amount | YoY_order_amount_change | YoY_growth |
+| -- | -- | --: | --: | --: |
+| 2020 | Durham | 1300.29 | NULL | NULL |
+| 2021 | Durham | 6397.54 | 5097.25 | 392.008700 |
+| 2022 | Durham | 7861.58 | 1464.04 | 22.884400 |
+| 2023 | Durham | 17864.47 | 10002.89 | 127.237700 |
+| 2024 | Durham | 20481.28 | 2616.81 | 14.648100 |
+| 2025 | Durham | 35429.51 | 14948.23 | 72.984800 |
+| 2020 | Harnett | 1583.54 | NULL | NULL |
+| 2021 | Harnett | 4875.37 | 3291.83 | 207.877900 |
+| 2022 | Harnett | 10563.94 | 5688.57 | 116.679800 |
+| 2023 | Harnett | 29232.37 | 18668.43 | 176.718400 |
+| 2024 | Harnett | 49998.43 | 20766.06 | 71.037900 |
+| 2025 | Harnett | 91161.96 | 41163.53 | 82.329600 |
+| 2020 | Johnston | 363.85 | NULL | NULL |
+| 2021 | Johnston | 146.00 | -217.85 | -59.873600 |
+| 2022 | Johnston | 2034.84 | 1888.84 | 1293.726000 |
+| 2023 | Johnston | 3656.17 | 1621.33 | 79.678500 |
+| 2024 | Johnston | 9990.39 | 6334.22 | 173.247400 |
+| 2025 | Johnston | 20158.51 | 10168.12 | 101.779000 |
+| 2020 | Lee | 73.94 | NULL | NULL |
+| 2021 | Lee | 2491.88 | 2417.94 | 3270.137900 |
+| 2022 | Lee | 3466.95 | 975.07 | 39.129900 |
+| 2023 | Lee | 10167.32 | 6700.37 | 193.264100 |
+| 2024 | Lee | 13994.18 | 3826.86 | 37.638800 |
+| 2025 | Lee | 20973.68 | 6979.50 | 49.874300 |
+| 2019 | Wake | 966.72 | NULL | NULL |
+| 2020 | Wake | 17434.75 | 16468.03 | 1703.495300 |
+| 2021 | Wake | 40744.55 | 23309.80 | 133.697400 |
+| 2022 | Wake | 69515.97 | 28771.42 | 70.614200 |
+| 2023 | Wake | 90985.45 | 21469.48 | 30.884200 |
+| 2024 | Wake | 145530.52 | 54545.07 | 59.949200 |
+| 2025 | Wake | 246473.68 | 100943.16 | 69.362200 |
+
+
+<!--
 ![coming soon](images/torn_coming_soon.jpg)
 [Designed by Freepik](www.freepik.com)
-
+-->
 </details>
 
 <!--
