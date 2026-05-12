@@ -2,6 +2,20 @@
 
 # Welcome to the Tmart Project
 
+## :pushpin: Overview
+
+Tmart is a simulated retail (grocery) data project that simulates the backend database of a small grocery and household goods store.
+
+The project includes relational database design, synthetic data generation, and transactional order simulation using MySQL and Python.  Rather than relying on a prebuilt dataset, custom Python generators were developed to create realistic data including products, customers order, shipments, cancellations, and customer purchasing behavior.
+
+The database schema, product hierarchy, and business rules were intentionally designed to support real scenarios, such as:
+
+- customer behavior
+- sales trends
+- order fulfillment and cancellation analysis
+
+ChatGPT was used to accelerate the data generation.
+
 ![MySQL](https://img.shields.io/badge/Database-MySQL-blue)
 ![Python](https://img.shields.io/badge/Language-Python-yellow)
 ![Tableau](https://img.shields.io/badge/Visualization-Tableau-E97627?logo=tableau&logoColor=white)
@@ -10,10 +24,6 @@
 ![Data](https://img.shields.io/badge/Data-Synthetic-orange)
 <!-- ![Status](https://img.shields.io/badge/Project-Complete-brightgreen)
 ![Power BI](https://img.shields.io/badge/Visualization-Power%20BI-F2C811?logo=powerbi&logoColor=black) -->
-
-## :pushpin: Overview
-
-Tmart is a simulated retail (grocery) data project that simulates the backend database of a small grocery and household goods store
 
 ### :link: Links
 
@@ -35,20 +45,29 @@ Tmart is a simulated retail (grocery) data project that simulates the backend da
 - inventory tracking
 - dashboards
 
-## :books: Create Schema
+## :file_folder: Create a raw transactional database
+
+<details>
+<summary>Expand to view details.</summary>
+
+### Schema
+
+---
 
 1. [Create Schema](sql/schema/create_tmart_db.sql)
 2. [Create Product tables](sql/schema/product_tables.sql)
 3. [Create Customer table](sql/schema/customer_table.sql)
 4. [Create Order tables](sql/schema/order_tables.sql)
 
-## :cd: ER Diagram
+### ER Diagram
 
 ![ER Diagram](images/Tmart_ER_Diagram.png)
 
-## :gear: Data Generation
+### Data Generation
 
-### Product Categories were provided
+---
+
+**Product Categories were provided**
 
 Insert the Product Categories/Subcategories into then MySQL DB
 
@@ -59,14 +78,173 @@ Insert the Product Categories/Subcategories into then MySQL DB
 
 ### Asked ChatGPT to create python scripts to create synthetic data
 
+---
+
 I reviewed and tailored the scripts to meet my needs.
 
-| Python script | Output | Insert | Target table | DB export |
-| -- | -- | -- | -- | --|
-| [generate_products.py](python/generate_tmart_products.py) | [Products csv file](data/raw/tmart_products.csv) | [Insert Products](sql/seed/import_tmart_products.sql) | tmart.products | [Products DB export](data/DB_exports/tmart_products_export.csv) |
-| [generate_customers.py](python/generate_customers.py) | [Customer csv file](data/raw/tmart_products.csv) | [Insert Customers](sql/seed/import_customers.sql) | tmart.customers | [Customer DB export](python/DB_exports/generate_customers.py) |
-| [generate_orders.py](python/generate_orders.py) | n/a | script inserts data into tables | tmart.orders <br> tmart.order_items | [Orders DB export](data/DB_exports/tmart_orders_export.csv) <br> [Order Items DB export](data/DB_exports/tmart_order_items_export.csv) |
+| Python script | Output | Insert | Target table |
+| -- | -- | -- | -- |
+| [generate_products.py](python/generate_tmart_products.py) | [Products csv file](data/raw/tmart_products.csv) | [Insert Products](sql/seed/import_tmart_products.sql) | tmart.products |
+| [generate_customers.py](python/generate_customers.py) | [Customer csv file](data/raw/tmart_products.csv) | [Insert Customers](sql/seed/import_customers.sql) | tmart.customers |
+| [generate_orders.py](python/generate_orders.py) | n/a | script inserts data into tables | tmart.orders <br> tmart.order_items |
 
+</details>
+
+## :building_construction: Data Engineering
+
+Make the database analytics-ready for BI reporting and dashboards
+
+<details>
+<summary>Expand to view details.</summary>
+
+### Overview
+
+---
+
+All source data is synthetic, generated bia a Python script.  
+
+<div align="center">
+
+| Component | Detail |
+| -- | -- |
+| Tech Stack | MySQL, Python |
+| Source Schema | tmart (raw/transactional) |
+| Analytics Schema | tmart_analytics (staging + dimensional) |
+| Data Type | Synthetic - generated via Python |
+
+</div>
+
+### Source Data
+
+---
+
+**Tables & Row Counts**
+
+<div align="center">
+
+| Table | Description | Approx. Rows |
+| -- | -- | --: |
+| customers | Customer data | 300 |
+| orders | Order header records | 10,200 |
+| order_items | Line-level order detail | 45,473 |
+| products | Product catelog | 10,000 |
+| products_subcategories | Subcategory reference | 40 |
+| products_categories | Category reference | 6 |
+
+</div>
+
+**Date Range**
+
+<div align="center">
+
+| Attribute | Value | 
+| -- | -- |
+| Earliest Order | 2019-06-24 |
+| Latest Order | 2026-04-30 |
+| Customer Records Span | 2019-01-22 to 2026-04-06 |
+
+</div>
+
+**Schema Diagram:**
+![ER Diagram](images/Tmart_ER_Diagram.png)
+
+### Data Audit & Profiling
+
+---
+
+Done prior to transformation, providing a clear view of raw data and informing all downstream decisions.
+
+**NULL Analysis**
+
+<div align="center">
+
+| Table | Column | NULL Count | NULL % | Action |
+| -- | -- | --: | --: | -- |
+| customers | date_inactive | 235 | 78% | Expected - active customers |
+| order_items | ship_date | 4560 | 10% | Expected- canceled items |
+| order_items | delivered_date | 4621 | 10% | Expected - shipped/canceled items |
+| order_items | canceled_date | 40913 | 90% | Expected - non-canceled items |
+| order_items | item_status | 0 | 0% | Expected - all items have a status |
+| products | date_inactive | 0 | 0% | Expected - no inactive products |
+
+</div>
+
+**Duplicate Check**
+
+<div align="center">
+
+| Table | Key Columns(s) | Duplicates Found | Resolution |
+| -- | -- | :--: | :--: |
+| customers | customer_id | N | n/a |
+| order_items | order_item_id | N | n/a |
+| orders | order_id | N | n/a |
+| products | product_id | N | n/a |
+| products_categories | category_id | N | n/a |
+| products_subcategories | subcategory_id | N | n/a |
+
+</div>
+
+**Referential Integrity Check**
+
+<div align="center">
+
+| Relationship | Orphans Found | Resolution |
+| -- | :--: | :--: |
+| order_items.order_id &xrarr; orders.order_id | N | n/a |
+| order_items.product_id &xrarr; products.product_id | N | n/a |
+| orders.customer_id  &xrarr; customers.customer_id | N | n/a |
+| products.subcategory_id &xrarr; products_subcategories.subcategory_id | N | n/a |
+| products_subcategories.category_id &xrarr; products_categories.category_id | N | n/a |
+
+</div>
+
+**Date Logic Validation**
+
+<div align="center">
+
+| Check | Violations Found | Resolution |
+| -- | :--: | :--: |
+| order_items.ship_date >= orders.order_date | N | n/a |
+| order_items.delivered_date >= order_items.ship_date | N | n/a |
+| order_items.canceled_date >= orders.order_date | Y | add time component to canceled_date |
+| customers.date_inactive >= customers.date_created | N | n/a |
+
+</div>
+
+**Categorical Value Audit**
+
+<div align="center">
+
+| Column | Expected Values | Unexpected Values Found |
+| -- | -- | -- |
+| order_items.item_status | Delivered, Shipped, Canceled | none |
+| customers.gender | M, F | none |
+
+</div>
+
+</details>
+
+## :bar_chart: Business Intelligence
+
+<details>
+<summary>Expand to view details.</summary>
+
+![coming soon](images/torn_coming_soon.jpg)
+[Designed by Freepik](www.freepik.com)
+
+</details>
+
+## :mag: Data Analytics
+
+<details>
+<summary>Expand to view details.</summary>
+
+![coming soon](images/torn_coming_soon.jpg)
+[Designed by Freepik](www.freepik.com)
+
+</details>
+
+<!--
 ## :wrench: Data Cleaning (work in progress)
 
 `tmart.orders.total_amount` - When an order contains **canceled** item line(s), the total amount was incorrect  
@@ -85,7 +263,7 @@ I reviewed and tailored the scripts to meet my needs.
 | Orders < $25 | $25 | $10 |
 
 ```sql
--- Select orders canceled items lines
+-- Select orders with canceled items
 
 WITH canceled_items AS
   (SELECT DISTINCT oi.order_id,
@@ -447,14 +625,10 @@ FROM cte_compare ;
 | 2024 | Wake | 145530.52 | 54545.07 | 59.949200 |
 | 2025 | Wake | 246473.68 | 100943.16 | 69.362200 |
 
-
-<!--
 ![coming soon](images/torn_coming_soon.jpg)
 [Designed by Freepik](www.freepik.com)
--->
 </details>
 
-<!--
 ## :window: Views
 
 ### [v_customer_orders](sql/views/v_customer_orders.sql)
