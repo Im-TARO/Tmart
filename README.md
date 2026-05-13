@@ -41,6 +41,7 @@ ChatGPT was used to accelerate the data generation.
 ## 🚀 Future Enhancements
 
 - seasonal demand
+- historical pricing
 - promotions / discounts
 - inventory tracking
 - dashboards
@@ -54,39 +55,348 @@ ChatGPT was used to accelerate the data generation.
 
 ---
 
-1. [Create Schema](sql/schema/create_tmart_db.sql)
-2. [Create Product tables](sql/schema/product_tables.sql)
-3. [Create Customer table](sql/schema/customer_table.sql)
-4. [Create Order tables](sql/schema/order_tables.sql)
+<details>
+<summary>Expand to view DDL</summary>
 
-### ER Diagram
+```sql
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema tmart
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `tmart` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+USE `tmart`;
+
+-- -----------------------------------------------------
+-- Table `tmart`.`customers`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmart`.`customers` (
+  `customer_id` INT NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(50) NOT NULL,
+  `last_name` VARCHAR(50) NOT NULL,
+  `gender` CHAR(1) NULL DEFAULT NULL,
+  `phone_number` VARCHAR(12) NULL DEFAULT NULL,
+  `email` VARCHAR(255) NULL DEFAULT NULL,
+  `address` VARCHAR(200) NULL DEFAULT NULL,
+  `city` VARCHAR(100) NULL DEFAULT NULL,
+  `state` CHAR(2) NULL DEFAULT NULL,
+  `zipcode` VARCHAR(10) NULL DEFAULT NULL,
+  `county` VARCHAR(50) NULL DEFAULT NULL,
+  `dob` DATE NULL DEFAULT NULL,
+  `is_active` TINYINT NULL DEFAULT NULL,
+  `loyalty_member` TINYINT NULL DEFAULT NULL,
+  `date_created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_inactive` DATETIME NULL DEFAULT NULL,
+  `date_updated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY(`customer_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 301 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+-- -----------------------------------------------------
+-- Table `tmart`.`products_categories`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmart`.`products_categories` (
+  `category_id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL,
+  `description` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY(`category_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 7 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+-- -----------------------------------------------------
+-- Table `tmart`.`products_subcategories`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmart`.`products_subcategories` (
+  `subcategory_id` INT NOT NULL AUTO_INCREMENT,
+  `category_id` INT NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `description` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY(`subcategory_id`),
+  INDEX `fk_prod_subcategory_category` (`category_id` ASC) VISIBLE,
+  CONSTRAINT `fk_prod_subcategory_category` FOREIGN KEY(`category_id`) REFERENCES `tmart`.`products_categories` (`category_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 41 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+-- -----------------------------------------------------
+-- Table `tmart`.`products`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmart`.`products` (
+  `product_id` INT NOT NULL AUTO_INCREMENT,
+  `subcategory_id` INT NOT NULL,
+  `name` VARCHAR(300) NOT NULL,
+  `brand` VARCHAR(100) NULL DEFAULT NULL,
+  `sku` VARCHAR(50) NULL DEFAULT NULL,
+  `unit_size` VARCHAR(50) NULL DEFAULT NULL,
+  `price` DECIMAL(10, 2) NOT NULL,
+  `stock_quantity` INT NOT NULL DEFAULT '0',
+  `is_active` TINYINT(1) NOT NULL DEFAULT '1',
+  `date_created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_inactive` DATETIME NULL DEFAULT NULL,
+  `date_updated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY(`product_id`),
+  INDEX `fk_product_subcategory` (`subcategory_id` ASC) VISIBLE,
+  CONSTRAINT `fk_product_subcategory` FOREIGN KEY(`subcategory_id`) REFERENCES `tmart`.`products_subcategories` (`subcategory_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 10001 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+-- -----------------------------------------------------
+-- Table `tmart`.`orders`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmart`.`orders` (
+  `order_id` INT NOT NULL AUTO_INCREMENT,
+  `customer_id` INT NULL DEFAULT NULL,
+  `order_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `total_amount` DECIMAL(10, 2) NULL DEFAULT NULL,
+  `delivery_cost` DECIMAL(10, 2) NULL DEFAULT NULL,
+  `date_created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_updated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY(`order_id`),
+  INDEX `fk_customer` (`customer_id` ASC) VISIBLE,
+  CONSTRAINT `fk_customer` FOREIGN KEY(`customer_id`) REFERENCES `tmart`.`customers` (`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 10001 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+-- -----------------------------------------------------
+-- Table `tmart`.`order_items`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmart`.`order_items` (
+  `order_item_id` INT NOT NULL AUTO_INCREMENT,
+  `order_id` INT NULL DEFAULT NULL,
+  `product_id` INT NULL DEFAULT NULL,
+  `quantity` INT NULL DEFAULT NULL,
+  `unit_price` DECIMAL(10, 2) NULL DEFAULT NULL,
+  `line_total` DECIMAL(10, 2) NULL DEFAULT NULL,
+  `item_status` VARCHAR(50) NULL DEFAULT NULL,
+  `ship_date` DATETIME NULL DEFAULT NULL,
+  `delivered_date` DATETIME NULL DEFAULT NULL,
+  `canceled_date` DATETIME NULL DEFAULT NULL,
+  `date_created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_updated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY(`order_item_id`),
+  INDEX `fk_order` (`order_id` ASC) VISIBLE,
+  INDEX `pk_products` (`product_id` ASC) VISIBLE,
+  CONSTRAINT `fk_order` FOREIGN KEY(`order_id`) REFERENCES `tmart`.`orders` (`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `pk_products` FOREIGN KEY(`product_id`) REFERENCES `tmart`.`products` (`product_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 44969 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+```
+
+</details>
+
+### Table of Contents
+
+- [customers](#customers)
+- [orders](#orders)
+- [order_items](#order_items)
+- [products](#products)
+- [products_subcategories](#products_subcategories)
+- [products_categories](#products_categories)
+- [Schema Diagram](#schema-diagram)
+
+---
+
+### customers
+
+Stores one record for each customer, a customer may be active or inactive.
+
+<details>
+<summary>Expand to view details</summary>
+
+Primary Key: `customer_id`
+
+| Column | Data Type | Nullable | Description | Example |
+| -- | -- | -- | -- | -- |
+| `customer_id` | INT | No | Unique identifier for each customer. AUTO_INCREMENT | `1001` |
+| `first_name` | VARCHAR(50) | No | Customer's first name | `John` |
+| `last_name` | VARCHAR(50) | No | Customer's last name | `Doe` |
+| `gender` | CHAR(1) | Yes | Customer's self-reported gender. | `M`, `F` |
+| `phone_number` | VARCHAR(12) | Yes | Customer's self-reported gender. | `555-123-1234` |
+| `email` | VARCHAR(255) | Yes | Customer's email address | `name@domain.com` |
+| `address` | VARCHAR(200) | Yes | Customer's street address | `Austin` |
+| `city` | VARCHAR(100) | Yes | City of the customer's primary address. | `Austin` |
+| `state` | VARCHAR(100) | Yes | US state of the customer's primary address. Standardized to uppercase abbreviation. | `TX` |
+| `zipcode` | VARCHAR(10) | Yes | Zipcode of the customer's primary address. | `00000` |
+| `county` | VARCHAR(50) | Yes | County of the customer's primary address. | `Travis` |
+| `dob` | DATE | Yes | Customer's date of birth | `1985-06-14` |
+| `is_active` | TINYINT | Yes | Flag indicating whether the customer is currently available. `1` = active, `0` = inactive.| `1` |
+| `loyalty_member` | TINYINT | Yes | Flag indicating whether the customer is a loyalty member. `1` = yes, `0` = no. | `0` |
+| `date_created` | DATETIME | No | Timestamp when the customer account was created | `2023-03-15 09:22:00` |
+| `date_inactive` | DATETIME | Yes | Timestamp when the customer account was deactivated. `NULL` indicates the customer is currently active. | `2024-11-01 00:00:00` |
+| `date_updated` | DATETIME | No | Timestamp when the customer account was last updated. | `2024-11-01 00:00:00` |
+
+</details>
+
+### orders
+
+Stores one record per order placed. Each order belongs to one customer and may contain one or more line items in `order_items`.
+
+<details>
+<summary>Expand to view details</summary>
+
+Primary Key: `order_id`  
+Foreign Key: `customer_id` &xrarr; `customers.customer_id`
+
+| Column | Data Type | Nullable | Description | Example |
+| --- | --- | --- | --- | --- |
+| `order_id` | INT | No | Unique identifier for each order. AUTO_INCREMENT | `5001` |
+| `customer_id` | INT | No | References the customer who placed the order. Foreign key to `customers`. | `1001` |
+| `order_date` | DATETIME | No | Timestamp when the order was placed. | `2024-02-10 14:35:22` |
+| `total_amount` | DECIMAL(10,2) | No | Sum of `line_total` for all non-canceled items in the order. Does not include delivery cost.  | `87.45` |
+| `delivery_cost` | DECIMAL(10,2) | No | Delivery fee charged to the customer | `5.00` |
+| `date_created` | DATETIME | No | Timestamp when the order record was inserted. Matches `order_date` in the synthetic dataset. | `2024-02-10 14:35:22` |
+| `date_updated` | DATETIME | No | Timestamp when the order was last updated. | `2024-11-01 00:00:00` |
+
+**Delivery Cost Tiers**
+
+| Order Total | Loyalty Member | Non-loyalty Member |
+| --- | ---: | ---: |
+| **>= 75** | $0 | $0 |
+| **>= 50** | $0 | $5 |
+| **>= 25** | $5 | $10 |
+| **> 0** | $10 | $25 |
+
+</details>
+
+### order_items
+
+Stores one record per product line within an order. An order may have multiple line items. Each item has its own fulfillment status and set of date timestamps.
+
+<details>
+<summary>Expand to view details</summary>
+
+Primary Key: `order_item_id`  
+Foreign Keys:  
+- `order_id` &xrarr; `orders.order_id`  
+- `product_id` &xrarr; `products.product_id`
+
+| Column | Data Type | Nullable | Description | Example |
+| -------- | ----------- | ---------- | ------------- | --------- |
+| `order_item_id` | INT | No | Unique identifier for each order line item. AUTO_INCREMENT | `10001` |
+| `order_id` | INT | No | References the parent order. Foreign key to `orders`. | `5001` |
+| `product_id` | INT | No | References the product ordered. Foreign key to `products`. | `201` |
+| `quantity` | INT | No | Number of units ordered for this line item. | `3` |
+| `unit_price` | DECIMAL(10,2) | No | Actual price paid per unit at time of purchase. May differ from `products.price` due to a simulated ±10% price variance representing promotions or price drift. | `4.49` |
+| `line_total` | DECIMAL(10,2) | No | Total value for this line item. Calculated as `unit_price × quantity`. | `13.47` |
+| `item_status` | VARCHAR(20) | No | Fulfillment status of the line item. | `Delivered` |
+| `ship_date` | DATETIME | Yes | Timestamp when the item was shipped. Populated for `Delivered` and `Shipped` items only. `NULL` for `Canceled` items. | `2024-02-12 10:15:00` |
+| `delivered_date` | DATETIME | Yes | Timestamp when the item was delivered. Populated for `Delivered` items only. Items shipped on the same day share the same `delivered_date`. | `2024-02-15 00:00:00` |
+| `canceled_date` | DATETIME | Yes | Timestamp when the item was canceled. Populated for `Canceled` items only.  | `2024-02-11 00:00:00` |
+| `date_created` | DATETIME | No | Timestamp when the record was inserted. Matches `order_date` of the parent order in the synthetic dataset. | `2024-02-10 14:35:22` |
+| `date_updated` | DATETIME | No | Timestamp when the order item was last updated. | `2024-11-01 00:00:00` |
+
+**Date Population Rules by Status:**
+
+| Value | Description | ship_date | delivered_date | canceled_date | Included in total_amount |
+| ----- | ----------- | --------- | -------------- | ------------- | ------------------------- |
+| `Delivered` | Item fulfilled end-to-end | Populated | Populated | NULL | Yes |
+| `Shipped` | Item in transit, not yet delivered | Populated | NULL | NULL | Yes |
+| `Canceled` | Item canceled before fulfillment | NULL | NULL | Populated | No |
+
+</details>
+
+### products
+
+Stores one record per product in the catalog. Products belong to a subcategory which rolls up to a category.
+
+<details>
+<summary>Expand to view details</summary>
+
+Primary Key: `product_id`  
+Foreign Key: `subcategory_id` → `product_subcategories.subcategory_id`
+
+| Column | Data Type | Nullable | Description | Example |
+| ------ | --------- | -------- | ----------- | ------- |
+| `product_id` | INT | No | Unique identifier for each product. AUTO_INCREMENT | `201` |
+| `subcategory_id` | INT | No | References the product subcategory. Foreign key to `product_subcategories`. | `12` |
+| `name` | VARCHAR(300) | No | Full product name as displayed to customers. | `Organic Whole Milk 1 Gallon` |
+| `brand` | VARCHAR(100) | Yes | Brand or manufacturer name. | `Horizon Organic` |
+| `sku` | VARCHAR(50) | Yes | Stock Keeping Unit — unique product identifier used in inventory management. | `MILK-HOR-001` |
+| `unit_size` | VARCHAR(50) | Yes | Package size or weight description. | `1 gallon`, `12 oz`, `500g` |
+| `price` | DECIMAL(10,2) | No | Current list price of the product. | `5.99` |
+| `stock_quantity` |INT | No | Current stock level | `100` |
+| `is_active` | TINYINT(1) | No | Flag indicating whether the product is currently available. `1` = active, `0` = inactive. | `1` |
+| `date_created` | DATETIME | No | Timestamp when the product was added to the catalog. | `2023-01-01 00:00:00` |
+| `date_inactive` | DATETIME | Yes | Timestamp when the product was discontinued or delisted. `NULL` indicates the product is currently active. | `2024-06-30 00:00:00` |
+| `date_updated` | DATETIME | No | Timestamp when the product was last updated. | `2024-11-01 00:00:00` |
+
+
+**Notes:**
+- `is_active = 1` products are the only ones eligible for new order generation
+- `unit_price` in `order_items` reflects the price at time of sale, not the current `products.price`
+
+
+</details>
+
+### products_subcategories
+
+Lookup table mapping products to their subcategories. Each subcategory belongs to one parent category.
+
+<details>
+<summary>Expand to view details</summary>
+
+Primary Key: `subcategory_id`  
+Foreign Key: `category_id` &xrarr; `products_categories.category_id`
+
+| Column | Data Type | Nullable | Description | Example |
+| --- | --- | --- | --- | --- |
+| `subcategory_id` | INT | No | Unique identifier for each product subcategory. | `12` |
+| `category_id` | INT | No | References the parent category. Foreign key to `products_categories`. | `3` |
+| `name` | VARCHAR(100) | No | Subcategory display name. | `Dairy` |
+| `description` | VARCHAR(255) | Yes | Category description. | `Cheese, milk, yogurt, butter, eggs` |
+
+</details>
+
+### products_categories
+
+Top-level product classification. Each category contains one or more subcategories.
+
+<details>
+<summary>Expand to view details</summary>
+
+Primary Key: `category_id`
+
+| Column | Data Type | Nullable | Description | Example |
+| --- | --- | --- | --- | --- |
+| `category_id` | INT | No | Unique identifier for each product category. | `3` |
+| `name` | VARCHAR(100) | No | Category display name. | `Food and Beverages` |
+| `description` | VARCHAR(255) | Yes | Category description. | `Groceries, snacks, drinks` |
+
+</details>
+
+#### Schema Diagram
 
 ![ER Diagram](images/Tmart_ER_Diagram.png)
 
 ### Data Generation
 
 ---
-
 **Product Categories were provided**
 
 Insert the Product Categories/Subcategories into then MySQL DB
 
-| SQL | Table | DB export (csv) |
-| -- | -- | -- |
-| [Insert statement](sql/seed/insert_tmart_products_categories.sql) | tmart.product_categories | [Product Categories export](data/DB_exports/tmart_products_categories_export.csv) |
-| | tmart.product_subcategories | [Product Subcategory export](data/DB_exports/tmart_products_subcategories_export.csv) |
+<div align="center">
+
+| SQL | Table(s) |
+| -- | -- |
+| [Insert statement](sql/seed/insert_tmart_products_categories.sql) | tmart.product_categories <br> tmart.product_subcategories |
+
+</div>
 
 ### Asked ChatGPT to create python scripts to create synthetic data
 
 ---
-
 I reviewed and tailored the scripts to meet my needs.
 
-| Python script | Output | Insert | Target table |
+<div align="center">
+
+| Python script | Output | Insert | Table(s) |
 | -- | -- | -- | -- |
 | [generate_products.py](python/generate_tmart_products.py) | [Products csv file](data/raw/tmart_products.csv) | [Insert Products](sql/seed/import_tmart_products.sql) | tmart.products |
 | [generate_customers.py](python/generate_customers.py) | [Customer csv file](data/raw/tmart_products.csv) | [Insert Customers](sql/seed/import_customers.sql) | tmart.customers |
 | [generate_orders.py](python/generate_orders.py) | n/a | script inserts data into tables | tmart.orders <br> tmart.order_items |
+
+</div>
 
 </details>
 
@@ -97,10 +407,17 @@ Make the database analytics-ready for BI reporting and dashboards
 <details>
 <summary>Expand to view details.</summary>
 
+### Table of Contents
+
+- [Overview](#overview)
+- [Source Data](#source-data)
+- [Data Audit & Profiling](#data-audit--profiling)
+- [Staging Layer](#staging-layer)
+- [Dimensional Model](#dimensional-model)
+
 ### Overview
 
 ---
-
 All source data is synthetic, generated bia a Python script.  
 
 <div align="center">
@@ -151,8 +468,10 @@ All source data is synthetic, generated bia a Python script.
 ### Data Audit & Profiling
 
 ---
-
 Done prior to transformation, providing a clear view of raw data and informing all downstream decisions.
+
+<details>
+<summary>Expand to view details.</summary>
 
 **NULL Analysis**
 
@@ -221,6 +540,124 @@ Done prior to transformation, providing a clear view of raw data and informing a
 | customers.gender | M, F | none |
 
 </div>
+
+</details>
+
+### Staging Layer
+
+---
+Staging tables (stg_*) clean and standerdize raw data without applying business logic.  Records with issues are flagged rather than dropped.
+
+**Transformations**
+
+<div align="center">
+
+| Table | Transformation | Reason |
+| -- | -- | -- |
+| All | TRIM() on all VARCHAR fields | Prevent join failures from whitespace |
+| customers | UPPER(gender), UPPER(state) | Standardize categorical values |
+| order_items | UPPER(item_status) | Consistent status values |
+
+</div>
+
+### Dimensional Model
+
+---
+A star schema is built on top of the staging layer to optimize query performance and simplify dashboard development.
+
+<details>
+<summary>Expand to view details.</summary>
+
+**Fact Tables**
+
+<ins>fact_orders</ins> - Order header grain (one row per order)
+
+<div align="center">
+
+| Column | Type | Source | Notes |
+| -- | -- | -- | -- |
+| order_id | INT | orders.order_id | Primary key |
+| customer_id | INT | orders.customer_id | FK → dim_customer |
+| date_key | INT | Derived from order_date | FK → dim_date |
+| total_amount | DECIMAL | orders.total_amount | Product revenue only |
+| delivery_cost | DECIMAL | orders.delivery_cost | Customer-facing delivery fee |
+| gross_revenue | DECIMAL | total_amount + delivery_cost | Derived field |
+
+</div>
+
+<ins>fact_order_items</ins> - Order item grain (one row per item)
+
+<div align="center">
+
+| Column | Type | Source | Notes |
+| -- | -- | -- | -- |
+| order_item_id | INT | order_items | Primary key |
+| order_id | INT | order_items | FK → fact_orders |
+| product_id | INT | order_items | FK → dim_product |
+| ship_date_key | INT | Derived from ship_date | FK → dim_date |
+| delivered_date_key | INT | Derived from delivered_date | FK → dim_date |
+| quantity | INT | order_items.quantity | |
+| unit_price | DECIMAL | order_items.unit_price | Actual sell price |
+| line_total | DECIMAL | order_items.line_total | |
+| item_status | VARCHAR | order_items.item_status | Standardized |
+| is_canceled | TINYINT | Derived | 1 if canceled |
+| days_to_ship | INT | ship_date - order_date | Derived |
+| days_to_deliver | INT | delivered_date - ship_date | Derived |
+
+</div>
+
+**Dimension Tables**
+
+<ins>dim_customer</ins>
+
+<div align="center">
+
+| Column | Type | Source | Notes |
+| -- | -- | -- | -- |
+| customer_id | INT | customers.customer_id | Primary key |
+| gender | VARCHAR | stg_customers.gender | Standardized to uppercase |
+| city | VARCHAR | stg_customers.city | |
+| state | VARCHAR | stg_customers.state | Standardized to uppercase |
+| age | INT | Derived from dob | Calculated at query time |
+| age_group | VARCHAR | Derived from age | Under 25, 25-34, etc. |
+| is_active | TINYINT | Derived | 1 if date_inactive IS NULL |
+
+</div>
+
+<ins>dim_product</ins>
+
+<div align="center">
+
+| Column | Type | Source | Notes |
+| -- | -- | -- | -- |
+| product_id | INT | products.product_id | Primary key |
+| name | VARCHAR | products.name | |
+| brand | VARCHAR | products.brand | |
+| list_price | DECIMAL | products.price | Catalog price |
+| subcategory_name | VARCHAR | product_subcategories.name | Denormalized |
+| category_name | VARCHAR | product_categories.name | Denormalized |
+| is_active | TINYINT | Derived from date_inactive | |
+
+</div>
+
+<ins>dim_date</ins>
+
+<div align="center">
+
+| Column | Type | Notes |
+| -- | -- | -- |
+| date_key | INT | YYYYMMDD format (e.g. 20240115) |
+| date | DATE | Actual date |
+| year | INT | |
+| quarter | INT | 1-4 |
+| month_name | VARCHAR | January, February, etc. |
+| day_name | VARCHAR | Monday, Tuesday, etc. |
+| is_weekend | TINYINT | 1 if Saturday or Sunday |
+| is_holiday | TINYINT | 1 if US public holiday |
+
+</div>
+
+</details>
 
 </details>
 
