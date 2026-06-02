@@ -2,7 +2,14 @@
 
 # Welcome to the Tmart Project
 
-## :pushpin: Overview
+![Data](https://img.shields.io/badge/Data-Synthetic-white?style=plastic&logoColor=white&logoSize=auto&labelColor=orange)
+![MySQL](https://img.shields.io/badge/MySQL-Database-white?style=plastic&logo=mysql&logoColor=white&logoSize=auto&labelColor=blue)
+![Python](https://img.shields.io/badge/Python-Language-white?style=plastic&logo=python&logoColor=white&logoSize=auto&labelColor=yellow)
+![Tableau](https://img.shields.io/badge/Tableau-Visualization-white?style=plastic&logoColor=white&logoSize=auto&labelColor=blue)
+![Excel](https://img.shields.io/badge/Excel-Tool-white?style=plastic&logoColor=white&logoSize=auto&labelColor=green)
+![Dataoi](https://img.shields.io/badge/draw.io-Tool-white?style=plastic&logoColor=white&logoSize=auto&labelColor=orange)
+
+# :pushpin: Overview
 
 Tmart is a simulated retail (grocery) data project that simulates the backend database of a small grocery and household goods store.
 
@@ -16,12 +23,6 @@ The database schema, product hierarchy, and business rules were intentionally de
 
 ChatGPT was used to accelerate the data generation.
 
-![MySQL](https://img.shields.io/badge/Database-MySQL-blue)
-![Python](https://img.shields.io/badge/Language-Python-yellow)
-![Tableau](https://img.shields.io/badge/Visualization-Tableau-E97627?logo=tableau&logoColor=white)
-![Excel](https://img.shields.io/badge/Tool-Excel-217346?logo=microsoft-excel&logoColor=white)
-![ChatGPT](https://img.shields.io/badge/AI-ChatGPT-10A37F?logo=openai&logoColor=white)
-![Data](https://img.shields.io/badge/Data-Synthetic-orange)
 <!-- ![Status](https://img.shields.io/badge/Project-Complete-brightgreen)
 ![Power BI](https://img.shields.io/badge/Visualization-Power%20BI-F2C811?logo=powerbi&logoColor=black) -->
 
@@ -31,172 +32,61 @@ ChatGPT was used to accelerate the data generation.
 [![LinkedIn](https://skillicons.dev/icons?i=linkedin&theme=dark&perline=15)](https://www.linkedin.com/in/robinsontd/)
 [![GitHub](https://skillicons.dev/icons?i=github&theme=dark&perline=15)](https://github.com/Im-TARO)
 
-## :dart: Objectives
+<br>
+
+# :dart: Objectives
 
 - Design a scalable retail database schema
 - Generate realistic, high-volume data
 - Simulate real-world business scenarios
 - Enable analytics-ready datasets
 
-## 🚀 Future Enhancements
+<br>
+
+# 🚀 Future Enhancements
 
 - seasonal demand
 - historical pricing
 - promotions / discounts
 - inventory tracking
 - dashboards
+- automation
 
-## :file_folder: Create a raw transactional database
+<br>
 
-<details>
-<summary>Expand to view details.</summary>
+# :file_folder: Tmart's transactional database
 
-### Schema
-
----
+Create the DB structure for Tmart
 
 <details>
-<summary>Expand to view DDL</summary>
+<summary>Expand to view details</summary>
 
-```sql
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+## Table of Contents
 
--- -----------------------------------------------------
--- Schema tmart
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `tmart` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-
-USE `tmart`;
-
--- -----------------------------------------------------
--- Table `tmart`.`customers`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tmart`.`customers` (
-  `customer_id` INT NOT NULL AUTO_INCREMENT,
-  `first_name` VARCHAR(50) NOT NULL,
-  `last_name` VARCHAR(50) NOT NULL,
-  `gender` CHAR(1) NULL DEFAULT NULL,
-  `phone_number` VARCHAR(12) NULL DEFAULT NULL,
-  `email` VARCHAR(255) NULL DEFAULT NULL,
-  `address` VARCHAR(200) NULL DEFAULT NULL,
-  `city` VARCHAR(100) NULL DEFAULT NULL,
-  `state` CHAR(2) NULL DEFAULT NULL,
-  `zipcode` VARCHAR(10) NULL DEFAULT NULL,
-  `county` VARCHAR(50) NULL DEFAULT NULL,
-  `dob` DATE NULL DEFAULT NULL,
-  `is_active` TINYINT NULL DEFAULT NULL,
-  `loyalty_member` TINYINT NULL DEFAULT NULL,
-  `date_created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `date_inactive` DATETIME NULL DEFAULT NULL,
-  `date_updated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY(`customer_id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 301 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
--- -----------------------------------------------------
--- Table `tmart`.`products_categories`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tmart`.`products_categories` (
-  `category_id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(100) NOT NULL,
-  `description` VARCHAR(255) NULL DEFAULT NULL,
-  PRIMARY KEY(`category_id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 7 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
--- -----------------------------------------------------
--- Table `tmart`.`products_subcategories`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tmart`.`products_subcategories` (
-  `subcategory_id` INT NOT NULL AUTO_INCREMENT,
-  `category_id` INT NOT NULL,
-  `name` VARCHAR(100) NOT NULL,
-  `description` VARCHAR(255) NULL DEFAULT NULL,
-  PRIMARY KEY(`subcategory_id`),
-  INDEX `fk_prod_subcategory_category` (`category_id` ASC) VISIBLE,
-  CONSTRAINT `fk_prod_subcategory_category` FOREIGN KEY(`category_id`) REFERENCES `tmart`.`products_categories` (`category_id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 41 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
--- -----------------------------------------------------
--- Table `tmart`.`products`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tmart`.`products` (
-  `product_id` INT NOT NULL AUTO_INCREMENT,
-  `subcategory_id` INT NOT NULL,
-  `name` VARCHAR(300) NOT NULL,
-  `brand` VARCHAR(100) NULL DEFAULT NULL,
-  `sku` VARCHAR(50) NULL DEFAULT NULL,
-  `unit_size` VARCHAR(50) NULL DEFAULT NULL,
-  `price` DECIMAL(10, 2) NOT NULL,
-  `stock_quantity` INT NOT NULL DEFAULT '0',
-  `is_active` TINYINT NOT NULL DEFAULT '1',
-  `date_created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `date_inactive` DATETIME NULL DEFAULT NULL,
-  `date_updated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY(`product_id`),
-  INDEX `fk_product_subcategory` (`subcategory_id` ASC) VISIBLE,
-  CONSTRAINT `fk_product_subcategory` FOREIGN KEY(`subcategory_id`) REFERENCES `tmart`.`products_subcategories` (`subcategory_id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 10001 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
--- -----------------------------------------------------
--- Table `tmart`.`orders`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tmart`.`orders` (
-  `order_id` INT NOT NULL AUTO_INCREMENT,
-  `customer_id` INT NULL DEFAULT NULL,
-  `order_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `total_amount` DECIMAL(10, 2) NULL DEFAULT NULL,
-  `delivery_cost` DECIMAL(10, 2) NULL DEFAULT NULL,
-  `date_created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `date_updated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY(`order_id`),
-  INDEX `fk_customer` (`customer_id` ASC) VISIBLE,
-  CONSTRAINT `fk_customer` FOREIGN KEY(`customer_id`) REFERENCES `tmart`.`customers` (`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 10001 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
--- -----------------------------------------------------
--- Table `tmart`.`order_items`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tmart`.`order_items` (
-  `order_item_id` INT NOT NULL AUTO_INCREMENT,
-  `order_id` INT NULL DEFAULT NULL,
-  `product_id` INT NULL DEFAULT NULL,
-  `quantity` INT NULL DEFAULT NULL,
-  `unit_price` DECIMAL(10, 2) NULL DEFAULT NULL,
-  `line_total` DECIMAL(10, 2) NULL DEFAULT NULL,
-  `item_status` VARCHAR(50) NULL DEFAULT NULL,
-  `ship_date` DATETIME NULL DEFAULT NULL,
-  `delivered_date` DATETIME NULL DEFAULT NULL,
-  `canceled_date` DATETIME NULL DEFAULT NULL,
-  `date_created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `date_updated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY(`order_item_id`),
-  INDEX `fk_order` (`order_id` ASC) VISIBLE,
-  INDEX `pk_products` (`product_id` ASC) VISIBLE,
-  CONSTRAINT `fk_order` FOREIGN KEY(`order_id`) REFERENCES `tmart`.`orders` (`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `pk_products` FOREIGN KEY(`product_id`) REFERENCES `tmart`.`products` (`product_id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 44969 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-```
-
-</details>
-
-### Table of Contents
-
-- [customers](#customers)
-- [orders](#orders)
-- [order_items](#order_items)
-- [products](#products)
-- [products_subcategories](#products_subcategories)
-- [products_categories](#products_categories)
 - [Schema Diagram](#schema-diagram)
+- [Data Dictionary](#data-dictionary)
+- [Data Generation](#data-generation)
+- [Data Changes](#data-changes)
+- [Generate CSV Files](#generate-csv-files)
 
----
+## Schema Diagram
 
-### customers
+[__Click to view the DDL__](sql/Tmart_db/create_db_tmart.sql)
+
+![ER Diagram](images/Tmart_ER_Diagram.png)
+
+## Data Dictionary
+
+| Table Name (click to view) | Description |
+| --- | --- |
+| [customers](#customers) | Stores one record for each customer |
+| [orders](#orders) | Stores one record per order placed |
+| [order_items](#order_items) | Stores one record per product line within an order |
+| [products](#products) | Stores one record per product |
+| [products_subcategories](#products_subcategories) | Lookup table mapping products to their subcategories |
+| [products_categories](#products_categories) | Top-level product classification |
+
+## customers
 
 Stores one record for each customer, a customer may be active or inactive.
 
@@ -227,7 +117,7 @@ Primary Key: `customer_id`
 
 </details>
 
-### orders
+## orders
 
 Stores one record per order placed. Each order belongs to one customer and may contain one or more line items in `order_items`.
 
@@ -247,7 +137,7 @@ Foreign Key: `customer_id` &xrarr; `customers.customer_id`
 | `date_created` | DATETIME | No | Timestamp when the order record was inserted. Matches `order_date` in the synthetic dataset. | `2024-02-10 14:35:22` |
 | `date_updated` | DATETIME | No | Timestamp when the order was last updated. | `2024-11-01 00:00:00` |
 
-**Delivery Cost Tiers**
+### Delivery Cost Tiers
 
 | Order Total | Loyalty Member | Non-loyalty Member |
 | --- | ---: | ---: |
@@ -258,7 +148,7 @@ Foreign Key: `customer_id` &xrarr; `customers.customer_id`
 
 </details>
 
-### order_items
+## order_items
 
 Stores one record per product line within an order. An order may have multiple line items. Each item has its own fulfillment status and set of date timestamps.
 
@@ -285,7 +175,7 @@ Foreign Keys:
 | `date_created` | DATETIME | No | Timestamp when the record was inserted. Matches `order_date` of the parent order in the synthetic dataset. | `2024-02-10 14:35:22` |
 | `date_updated` | DATETIME | No | Timestamp when the order item was last updated. | `2024-11-01 00:00:00` |
 
-**Date Population Rules by Status:**
+### Date Population Rules by Status:
 
 | Value | Description | ship_date | delivered_date | canceled_date | Included in total_amount |
 | ----- | ----------- | --------- | -------------- | ------------- | ------------------------- |
@@ -295,7 +185,7 @@ Foreign Keys:
 
 </details>
 
-### products
+## products
 
 Stores one record per product in the catalog. Products belong to a subcategory which rolls up to a category.
 
@@ -320,15 +210,14 @@ Foreign Key: `subcategory_id` → `product_subcategories.subcategory_id`
 | `date_inactive` | DATETIME | Yes | Timestamp when the product was discontinued or delisted. `NULL` indicates the product is currently active. | `2024-06-30 00:00:00` |
 | `date_updated` | DATETIME | No | Timestamp when the product was last updated. | `2024-11-01 00:00:00` |
 
+### Notes -
 
-**Notes:**
-- `is_active = 1` products are the only ones eligible for new order generation
-- `unit_price` in `order_items` reflects the price at time of sale, not the current `products.price`
-
+- `is_active = 1` - products are the only ones eligible for new order generation
+- `unit_price` in `order_items` - reflects the price at time of sale, not the current `products.price`
 
 </details>
 
-### products_subcategories
+## products_subcategories
 
 Lookup table mapping products to their subcategories. Each subcategory belongs to one parent category.
 
@@ -347,7 +236,7 @@ Foreign Key: `category_id` &xrarr; `products_categories.category_id`
 
 </details>
 
-### products_categories
+## products_categories
 
 Top-level product classification. Each category contains one or more subcategories.
 
@@ -364,97 +253,290 @@ Primary Key: `category_id`
 
 </details>
 
-#### Schema Diagram
+## Data Generation
 
-![ER Diagram](images/Tmart_ER_Diagram.png)
+### List of Product Categories and Subcategories were provided
 
-### Data Generation
+Insert into `tmart.product_categories` and `tmart.product_subcategories`
 
----
-**Product Categories were provided**
+[__Click to view the DML__](sql/Tmart_db/insert_products_categories.sql)
 
-Insert the Product Categories/Subcategories into then MySQL DB
+### Asked ChatGPT to create Python scripts to create synthetic data
+
+I reviewed and tailored the scripts to better meet my needs.
+
+<details>
+<summary>Expand to view details</summary>
+
+#### Pythons scripts used to create synthetic data
 
 <div align="center">
 
-| SQL | Table(s) |
+| [generate_products.py](python/Tmart_db/generate_products.py) | |
 | -- | -- |
-| [Insert statement](sql/seed/insert_tmart_products_categories.sql) | tmart.product_categories <br> tmart.product_subcategories |
+| Usage | > python .\generate_products.py |
+| Output | csv file |
+| Insert | [DML command](sql/Tmart_db/insert_products.sql) |
+| Tables(s) | `tmart.products` |
+
+| [generate_customers.py](python/Tmart_db/generate_customers.py) | |
+| -- | -- |
+| Usage | Usage (PowerShell): with optional overrides: <br> > python generate_customers.py \` <br> --num-customers 100 \` <br> --dob-start-year 1960 \` <br>--created-start 2026-03-01 \` <br> --created-end   2026-03-31 |
+| Output | csv file |
+| Insert | [DML command](sql/Tmart_db/insert_customers.sql) |
+| Tables(s) | `tmart.customers` |
+
+| [generate_orders.py](python/Tmart_db/generate_orders.py) | |
+| -- | -- |
+| Usage | Usage (PowerShell): <br> $env:DB_USER = "your_username" <br> $env:DB_PASSWORD = "your_password" <br> python generate_orders.py 2024-01-01 2024-01-31 5000 <br><br> Arguments: <br> start_date  : Start of the order generation window (YYYY-MM-DD) <br> end_date    : End of the order generation window (YYYY-MM-DD) <br> num_orders  : Number of orders to generate (default: 1000) <br><br> Environment Variables: <br> DB_HOST     : MySQL host (default: localhost) <br>     DB_USER     : MySQL username (required) <br> DB_PASSWORD : MySQL password (required) <br> DB_NAME     : Target database name (default: tmart) |
+| Output | none |
+| Insert | Python script inserts orders into the MySQL DB |
+| Tables(s) | `tmart.orders` `tmart.order_items` |
 
 </div>
-
-### Asked ChatGPT to create python scripts to create synthetic data
-
----
-I reviewed and tailored the scripts to meet my needs.
-
-<div align="center">
-
-| Python script | Output | Insert | Table(s) |
-| -- | -- | -- | -- |
-| [generate_products.py](python/generate_tmart_products.py) | [Products csv file](data/raw/tmart_products.csv) | [Insert Products](sql/seed/import_tmart_products.sql) | tmart.products |
-| [generate_customers.py](python/generate_customers.py) | [Customer csv file](data/raw/tmart_products.csv) | [Insert Customers](sql/seed/import_customers.sql) | tmart.customers |
-| [generate_orders.py](python/generate_orders.py) | n/a | script inserts data into tables | tmart.orders <br> tmart.order_items |
-
-</div>
-
 </details>
 
-## :building_construction: Data Engineering
+## Data Changes
 
-Make the database analytics-ready for BI reporting and dashboards
+`tmart.orders.total_amount` - When an order contains **canceled** item line(s), the total amount was incorrect  
+`tmart.orders.delivery_cost` - Delivery charges may need to be revised for orders that include **canceled** item lines
 
 <details>
 <summary>Expand to view details.</summary>
 
-### Table of Contents
+### Business rule for Delivery Cost
+
+| Order Amount | Delivery Cost | Loyalty Members |
+| -- | :--: | :--: |
+| Orders >= $75 | Free | Free |
+| Orders >= $50 | $5 | Free |
+| Orders >= $25 | 10 | $5 |
+| Orders < $25 | $25 | $10 |
+
+```sql
+-- Select orders with canceled items
+
+WITH canceled_items AS
+  (SELECT DISTINCT oi.order_id,
+                   o.total_amount,
+                   o.delivery_cost,
+                   o.customer_id,
+                   c.loyalty_member
+   FROM order_items oi
+   JOIN orders o ON oi.order_id = o.order_id
+   JOIN customers c ON o.customer_id = c.customer_id
+   WHERE oi.item_status = 'Canceled'),
+     new_totals AS
+  (SELECT i.order_id,
+          group_concat(DISTINCT i.item_status) statuses,
+          SUM(CASE
+                  WHEN item_status != 'Canceled' THEN line_total
+                  ELSE 0
+              END) AS new_total
+   FROM order_items i
+   JOIN canceled_items ci ON i.order_id = ci.order_id
+   GROUP BY 1)
+SELECT n.order_id,
+       n.statuses,
+       c.total_amount old_total,
+       n.new_total,
+       c.loyalty_member,
+       c.delivery_cost old_delivery_cost,
+       CASE
+           WHEN n.new_total = 0 THEN 0
+           WHEN c.loyalty_member THEN CASE
+                                          WHEN n.new_total >= 50 THEN 0
+                                          WHEN n.new_total >= 25 THEN 5
+                                          ELSE 10
+                                      END
+           ELSE CASE
+                    WHEN n.new_total >= 75 THEN 0
+                    WHEN n.new_total >= 50 THEN 5
+                    WHEN n.new_total >= 25 THEN 10
+                    ELSE 25
+                END
+       END new_delivery_cost
+FROM new_totals n
+JOIN canceled_items c ON n.order_id = c.order_id
+LIMIT 15;
+```
+
+| order_id | statuses | old_total | new_total | loyalty_member | old_delivery_cost | new_delivery_cost |
+| -- | -- | --: | --: | -- | --: | --: |
+| 1 | Canceled,Delivered,Shipped | 214.80 | 206.02 | 1 | 0.00 | 0 |
+| 6 | Canceled,Delivered,Shipped | 132.53 | 99.89 | 1 | 0.00 | 0 |
+| 9 | Canceled | 7.40 | 0.00 | 1 | 25.00 | 0 |
+| 10 | Canceled | 38.95 | 0.00 | 1 | 10.00 | 0 |
+| 11 | Canceled,Delivered | 171.84 | 145.09 | 1 | 0.00 | 0 |
+| 14 | Canceled,Delivered | 245.90 | 228.11 | 1 | 0.00 | 0 |
+| 15 | Canceled,Delivered | 74.89 | 26.85 | 1 | 5.00 | 5 |
+| 17 | Canceled,Delivered,Shipped | 105.37 | 82.15 | 1 | 0.00 | 0 |
+| 18 | Canceled,Delivered,Shipped | 86.71 | 72.85 | 0 | 0.00 | 5 |
+| 21 | Canceled,Delivered | 109.87 | 71.56 | 1 | 0.00 | 0 |
+| 24 | Canceled,Delivered,Shipped | 64.40 | 41.04 | 0 | 5.00 | 10 |
+| 25 | Canceled,Delivered | 42.70 | 33.46 | 0 | 10.00 | 10 |
+| 28 | Canceled,Delivered,Shipped | 222.62 | 216.31 | 1 | 0.00 | 0 |
+| 29 | Canceled,Delivered | 38.29 | 31.93 | 1 | 10.00 | 5 |
+| 31 | Canceled,Delivered,Shipped | 295.28 | 253.68 | 0 | 0.00 | 0 |
+
+### Stored Procedure Created
+
+Created a resuable procedure to fix order totals and delivery fees.  
+[__Click to view the DDL__](sql/Tmart_db/create_sp_fix_order_totals.sql)
+
+```sql
+CALL tmart.fix_order_totals();
+```
+
+### Validation Query
+
+```sql
+-- check order.total_amount and order.delivery_cost columns
+SELECT o.order_id,
+       o.total_amount,
+       SUM(CASE
+               WHEN oi.item_status != 'Canceled' THEN oi.line_total
+               ELSE 0
+           END) AS expected_total,
+       o.delivery_cost,
+       CASE
+           WHEN o.total_amount = 0 THEN 0
+           WHEN c.loyalty_member THEN CASE
+                                          WHEN o.total_amount >= 50 THEN 0
+                                          WHEN o.total_amount >= 25 THEN 5
+                                          ELSE 10
+                                      END
+           ELSE CASE
+                    WHEN o.total_amount >= 75 THEN 0
+                    WHEN o.total_amount >= 50 THEN 5
+                    WHEN o.total_amount >= 25 THEN 10
+                    ELSE 25
+                END
+       END expected_delivery_cost
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+JOIN order_items oi ON o.order_id = oi.order_id
+GROUP BY o.order_id
+HAVING o.total_amount != expected_total
+OR o.delivery_cost != expected_delivery_cost;
+```
+
+**0 row(s) returned**
+
+</details>  
+
+</br>
+
+`tmart.customer.gender` - add gender to the customer profile
+
+<details>
+<summary>Expand to view details.</summary>
+
+```sql
+ALTER TABLE tmart.customers ADD COLUMN gender CHAR(1) NULL AFTER last_name;
+
+UPDATE customers
+SET gender = 'M'
+WHERE first_name IN ('Andrew', 'Charles', 'Christopher', 'Daniel',
+                     'David', 'James', 'Jason', 'John', 'Joseph',
+                     'Liam', 'Matthew', 'Michael', 'Randy',
+                     'Richard', 'Robert', 'Thomas', 'William');
+
+
+UPDATE customers
+SET gender = 'F'
+WHERE first_name NOT IN ('Andrew', 'Charles', 'Christopher', 'Daniel',
+                         'David', 'James', 'Jason', 'John', 'Joseph',
+                         'Liam', 'Matthew', 'Michael', 'Randy',
+                         'Richard', 'Robert', 'Thomas', 'William');
+
+SELECT first_name, last_name, gender
+FROM tmart.customers
+LIMIT 5;
+```
+
+| first_name | last_name | gender |
+| --- | --- | --- |
+| Joseph | Anderson | M |
+| Luna | Green | F |
+| Richard | Hernandez | M |
+| Richard | Allen | M |
+| Susan | Johnson | F |
+
+</details>
+
+## Generate CSV Files
+
+[__Click to view the SQL script__](sql/Tmart_db/create_csv_files.sql)
+
+</details>
+
+<br><br>
+
+# :triangular_ruler: Data Engineering
+
+Make the database ready for analytics, enabling BI reporting and dashboards.
+
+<details>
+<summary>Expand to view details.</summary>
+
+## Table of Contents
 
 - [Overview](#overview)
 - [Source Data](#source-data)
-- [Data Audit & Profiling](#data-audit--profiling)
-- [Staging Layer](#staging-layer)
-- [Dimensional Model](#dimensional-model)
+- [Staging Raw Layer](#1-staging-raw-layer)
+- [Staging Intermediate Layer](#2-staging-intermediate-layer)
+- [Dimensional Model](#3-dimensional-model)
 
-### Overview
+## Overview
 
----
-All source data is synthetic, generated bia a Python script.  
+Note: All source data is synthetic, generated via a Python script.  
 
 <div align="center">
 
 | Component | Detail |
 | -- | -- |
 | Tech Stack | MySQL, Python |
-| Source Schema | tmart (raw/transactional) |
-| Analytics Schema | tmart_analytics (staging + dimensional) |
+| Source Data | cvs files (exported from Tmart DB) |
+| Staging Schema | tmart_staging (raw & intermediate) |
+| Analytics Schema | tmart_analytics (analytics-ready) |
 | Data Type | Synthetic - generated via Python |
 
 </div>
 
-### Source Data
+### General Rules
 
----
+- Naming Conventions: Use snakecase
+- Avoid Reserved Words: Do not use SQL reserved words
 
-**Tables & Row Counts**
+<br>
+
+![HighLevelArch](images/HighLevelArchitechture.jpg)
+
+## Source Data
+
+### Files & Row Counts
 
 <div align="center">
 
-| Table | Description | Approx. Rows |
+| File | Description | Approx. Rows |
 | -- | -- | --: |
-| customers | Customer data | 300 |
-| orders | Order header records | 10,200 |
-| order_items | Line-level order detail | 45,473 |
-| products | Product catelog | 10,000 |
-| products_subcategories | Subcategory reference | 40 |
-| products_categories | Category reference | 6 |
+| tmart_customers.csv | Customer data | 300 |
+| tmart_orders.csv | Order header records | 10,200 |
+| tmart_order_items.csv | Line-level order detail | 45,473 |
+| tmart_products.csv | Product catelog | 10,000 |
+| tmart_products_subcategories.csv | Subcategory reference | 40 |
+| tmart_products_categories.csv | Category reference | 6 |
 
 </div>
 
-**Date Range**
+![SourceData](images/Source_Data.jpg)
+
+### Date Range
 
 <div align="center">
 
-| Attribute | Value | 
+| Attribute | Value |
 | -- | -- |
 | Earliest Order | 2019-06-24 |
 | Latest Order | 2026-04-30 |
@@ -462,112 +544,135 @@ All source data is synthetic, generated bia a Python script.
 
 </div>
 
-**Schema Diagram:**
-![ER Diagram](images/Tmart_ER_Diagram.png)
+## 1. Staging Raw Layer
 
-### Data Audit & Profiling
-
----
-Done prior to transformation, providing a clear view of raw data and informing all downstream decisions.
+The raw staging tables (tmart_raw_*) act as a landing zone for source data, no changes to the data.
 
 <details>
 <summary>Expand to view details.</summary>
 
-**NULL Analysis**
+<br>
 
-<div align="center">
+**Data Flow**  
+![DataFlow1](images/Raw_DataFlow.jpg)
 
-| Table | Column | NULL Count | NULL % | Action |
-| -- | -- | --: | --: | -- |
-| customers | date_inactive | 235 | 78% | Expected - active customers |
-| order_items | ship_date | 4560 | 10% | Expected- canceled items |
-| order_items | delivered_date | 4621 | 10% | Expected - shipped/canceled items |
-| order_items | canceled_date | 40913 | 90% | Expected - non-canceled items |
-| order_items | item_status | 0 | 0% | Expected - all items have a status |
-| products | date_inactive | 0 | 0% | Expected - no inactive products |
+## Rules
 
-</div>
+- All tables names must start with the source DB name followed by \_raw\_
+- <DB name>\_raw\_\<entity\>
+  - Example: tmart_raw_customers - customer table from the tmart DB
 
-**Duplicate Check**
+## Tables of Contents
 
-<div align="center">
+- [Analysis](#1a-analysis)
+- [Create Raw Tables](#1b-create-raw-tables)
+- [Data Load](#1c-data-load)
+- [Validataion](#1d-validation)
 
-| Table | Key Columns(s) | Duplicates Found | Resolution |
-| -- | -- | :--: | :--: |
-| customers | customer_id | N | n/a |
-| order_items | order_item_id | N | n/a |
-| orders | order_id | N | n/a |
-| products | product_id | N | n/a |
-| products_categories | category_id | N | n/a |
-| products_subcategories | subcategory_id | N | n/a |
+### 1a. Analysis
 
-</div>
+![SourceData](images/Raw_Layer.jpg)
 
-**Referential Integrity Check**
+| csv file | # of rows | Column Headers |
+| --- | ---: | --- |
+| tmart_customers.csv | 300 | customer_id, first_name, last_name, gender, <br> phone_number, email, address, city, state, zipcode, <br> county, dob, is_active, loyalty_member, date_created, <br> date_inactive, date_updated |
+| tmart_order_items.csv | 45,473 | order_item_id, order_id, product_id, <br> quantity, unit_price, line_total, item_status, <br> ship_date, delivered_date, canceled_date, <br> date_created, date_updated |
+| tmart_orders.csv | 10,200 | order_id, customer_id, order_date, total_amount, <br> delivery_cost, date_created, date_updated |
+| tmart_products. csv | 10,000 | product_id, subcategory_id, name, brand, sku, unit_size, <br> price, stock_quantity, is_active, date_created, <br> date_inactive, date_updated |
+| tmart_products_categories.csv | 6 | category_id, name, description |
+| tmart_products_subcategories.cvs | 40 | subcategory_id, category_id, name, description |
 
-<div align="center">
+### 1b. Create Raw Tables
 
-| Relationship | Orphans Found | Resolution |
-| -- | :--: | :--: |
-| order_items.order_id &xrarr; orders.order_id | N | n/a |
-| order_items.product_id &xrarr; products.product_id | N | n/a |
-| orders.customer_id  &xrarr; customers.customer_id | N | n/a |
-| products.subcategory_id &xrarr; products_subcategories.subcategory_id | N | n/a |
-| products_subcategories.category_id &xrarr; products_categories.category_id | N | n/a |
+[__Click to view the DDL__](sql/staging_raw/create_raw_tables.sql)
 
-</div>
+### 1c. Data Load
 
-**Date Logic Validation**
+#### Refreshing the raw tables
 
-<div align="center">
+[__Click to view the DML__](sql/staging_raw/load_raw_tables.sql)
 
-| Check | Violations Found | Resolution |
-| -- | :--: | :--: |
-| order_items.ship_date >= orders.order_date | N | n/a |
-| order_items.delivered_date >= order_items.ship_date | N | n/a |
-| order_items.canceled_date >= orders.order_date | Y | add time component to canceled_date |
-| customers.date_inactive >= customers.date_created | N | n/a |
+### 1d. Validation
 
-</div>
+<ins>__Check Number of Rows__</ins>
 
-**Categorical Value Audit**
-
-<div align="center">
-
-| Column | Expected Values | Unexpected Values Found |
-| -- | -- | -- |
-| order_items.item_status | Delivered, Shipped, Canceled | none |
-| customers.gender | M, F | none |
-
-</div>
+| File | # rows file | Table | # rows in DB | column names match |
+| --- | ---: | --- | ---: | :---: |
+| tmart_customers.csv | 300 | tmart_raw_customers | 300 | Y |
+| tmart_order_items.csv | 45,473 | tmart_raw_order_items | 45,473 | Y |
+| tmart_orders.csv | 10,200 | tmart_raw_orders | 10,200 | Y |
+| tmart_products.csv | 10,000 | tmart_raw_products | 10,000 | Y |
+| tmart_products_categories.csv | 6 | tmart_raw_products_categories | 6 | Y |
+| tmart_products_subcategories.csv | 40 | tmart_raw_products_subcategories | 40 | Y |
 
 </details>
 
-### Staging Layer
+<br>
 
----
-Staging tables (stg_*) clean and standerdize raw data without applying business logic.  Records with issues are flagged rather than dropped.
+## 2. Staging Intermediate Layer
 
-**Transformations**
+The intermediate staging tables (tmart_int_*) store cleaned and standardized data.
+
+<details>
+<summary>Expand to view details.</summary>
+
+<br>
+
+**Data Flow**  
+![DataFlow1](images/Int_DataFlow.jpg)
+
+## Tables of Contents
+
+- [Analyze](#2a-analyze)
+- [Create Tables](#2b-create-tables)
+- [Data Cleaning & Load](#2c-data-cleansing--load)
+- [Validataion](#2d-validation)
+
+### 2a. Analyze
+
+#### Table Relationships (Raw Layer)
+
+![RawData](images/Raw_Data.jpg)
+
+### 2b. Create Tables
+
+[__Click to view the DDL__](sql/staging_int/create_int_tables.sql)
+
+### 2c. Data Cleansing & Load
+
+[__Click to view the DML__](sql/staging_int/load_int_tables.sql)
+
+#### Transformations
 
 <div align="center">
 
 | Table | Transformation | Reason |
 | -- | -- | -- |
-| All | TRIM() on all VARCHAR fields | Prevent join failures from whitespace |
-| customers | UPPER(gender), UPPER(state) | Standardize categorical values |
-| order_items | UPPER(item_status) | Consistent status values |
+| All | TRIM() on all VARCHAR fields | remove unwanted spaces |
+| tmart_int_customers | UPPER(state) <br> gender changed to 'Male','Female','Other','Unknown' <br> date_created and date_inactive cast as date (no time on the datetime column in the raw data) <br> if dob is in the future, set to NULL | Consistent values |
+| tmart_int_order_items | UPPER(item_status) | Consistent status values |
+| tmart_int_orders | date_created cast as date | no time on the datatime column in the raw data |
+| tmart_int_products | UPPER(sku) <br> product_type (derived column: product name minus the brand) <br> date_created and date_inactive cast as date (no time on the datetime column in the raw data)| Consistent values |
 
 </div>
 
-### Dimensional Model
 
----
+### 2d. Validation
+[__Click to view the Validation__](sql/staging_int/int_validation.sql)
+
+</details>
+
+## 3. Dimensional Model
+
 A star schema is built on top of the staging layer to optimize query performance and simplify dashboard development.
 
 <details>
 <summary>Expand to view details.</summary>
 
+![coming soon](images/torn_coming_soon.jpg)
+[Designed by Freepik](www.freepik.com)
+
+<!--
 **Fact Tables**
 
 <ins>fact_orders</ins> - Order header grain (one row per order)
@@ -656,12 +761,14 @@ A star schema is built on top of the staging layer to optimize query performance
 | is_holiday | TINYINT | 1 if US public holiday |
 
 </div>
-
+-->
 </details>
 
 </details>
 
-## :bar_chart: Business Intelligence
+<br><br>
+
+# :bar_chart: Business Intelligence
 
 <details>
 <summary>Expand to view details.</summary>
@@ -671,7 +778,9 @@ A star schema is built on top of the staging layer to optimize query performance
 
 </details>
 
-## :mag: Data Analytics
+<br><br>
+
+# :mag: Data Analytics
 
 <details>
 <summary>Expand to view details.</summary>
@@ -682,203 +791,6 @@ A star schema is built on top of the staging layer to optimize query performance
 </details>
 
 <!--
-## :wrench: Data Cleaning (work in progress)
-
-`tmart.orders.total_amount` - When an order contains **canceled** item line(s), the total amount was incorrect  
-`tmart.orders.delivery_cost` - Delivery charges may need to be revised for orders that include **canceled** item lines
-
-<details>
-<summary>Expand to view details.</summary>
-
-### Business rule for Delivery Cost
-
-| Order Amount | Delivery Cost | Loyalty Members |
-| -- | :--: | :--: |
-| Orders >= $75 | Free | Free |
-| Orders >= $50 | $5 | Free |
-| Orders >= $25 | 10 | $5 |
-| Orders < $25 | $25 | $10 |
-
-```sql
--- Select orders with canceled items
-
-WITH canceled_items AS
-  (SELECT DISTINCT oi.order_id,
-                   o.total_amount,
-                   o.delivery_cost,
-                   o.customer_id,
-                   c.loyalty_member
-   FROM order_items oi
-   JOIN orders o ON oi.order_id = o.order_id
-   JOIN customers c ON o.customer_id = c.customer_id
-   WHERE oi.item_status = 'Canceled'),
-     new_totals AS
-  (SELECT i.order_id,
-          group_concat(DISTINCT i.item_status) statuses,
-          SUM(CASE
-                  WHEN item_status != 'Canceled' THEN line_total
-                  ELSE 0
-              END) AS new_total
-   FROM order_items i
-   JOIN canceled_items ci ON i.order_id = ci.order_id
-   GROUP BY 1)
-SELECT n.order_id,
-       n.statuses,
-       c.total_amount old_total,
-       n.new_total,
-       c.loyalty_member,
-       c.delivery_cost old_delivery_cost,
-       CASE
-           WHEN n.new_total = 0 THEN 0
-           WHEN c.loyalty_member THEN CASE
-                                          WHEN n.new_total >= 50 THEN 0
-                                          WHEN n.new_total >= 25 THEN 5
-                                          ELSE 10
-                                      END
-           ELSE CASE
-                    WHEN n.new_total >= 75 THEN 0
-                    WHEN n.new_total >= 50 THEN 5
-                    WHEN n.new_total >= 25 THEN 10
-                    ELSE 25
-                END
-       END new_delivery_cost
-FROM new_totals n
-JOIN canceled_items c ON n.order_id = c.order_id
-LIMIT 15;
-```
-
-| order_id | statuses | old_total | new_total | loyalty_member | old_delivery_cost | new_delivery_cost |
-| -- | -- | --: | --: | -- | --: | --: |
-| 1 | Canceled,Delivered,Shipped | 214.80 | 206.02 | 1 | 0.00 | 0 |
-| 6 | Canceled,Delivered,Shipped | 132.53 | 99.89 | 1 | 0.00 | 0 |
-| 9 | Canceled | 7.40 | 0.00 | 1 | 25.00 | 0 |
-| 10 | Canceled | 38.95 | 0.00 | 1 | 10.00 | 0 |
-| 11 | Canceled,Delivered | 171.84 | 145.09 | 1 | 0.00 | 0 |
-| 14 | Canceled,Delivered | 245.90 | 228.11 | 1 | 0.00 | 0 |
-| 15 | Canceled,Delivered | 74.89 | 26.85 | 1 | 5.00 | 5 |
-| 17 | Canceled,Delivered,Shipped | 105.37 | 82.15 | 1 | 0.00 | 0 |
-| 18 | Canceled,Delivered,Shipped | 86.71 | 72.85 | 0 | 0.00 | 5 |
-| 21 | Canceled,Delivered | 109.87 | 71.56 | 1 | 0.00 | 0 |
-| 24 | Canceled,Delivered,Shipped | 64.40 | 41.04 | 0 | 5.00 | 10 |
-| 25 | Canceled,Delivered | 42.70 | 33.46 | 0 | 10.00 | 10 |
-| 28 | Canceled,Delivered,Shipped | 222.62 | 216.31 | 1 | 0.00 | 0 |
-| 29 | Canceled,Delivered | 38.29 | 31.93 | 1 | 10.00 | 5 |
-| 31 | Canceled,Delivered,Shipped | 295.28 | 253.68 | 0 | 0.00 | 0 |
-
-### Stored Procedure
-
-create resuable procedure to fix order totals and delivery fees
-
-```sql
-DELIMITER $$
-
-CREATE PROCEDURE fix_order_totals()
-comment 'Procedure to fix the order total_amount and delivery_cost when items are canceled: CALL fix_order_totals();'
-BEGIN
-
-    UPDATE orders o
-    JOIN (
-    with canceled as (select distinct i.order_id, c.loyalty_member from order_items i join orders o on i.order_id = o.order_id join customers c on o.customer_id = c.customer_id where i.item_status = 'Canceled')
-        SELECT
-            o.order_id, c.loyalty_member,
-            SUM(CASE
-                WHEN o.item_status != 'Canceled' THEN line_total
-                ELSE 0
-            END) AS new_total
-        FROM order_items o  join canceled c on o.order_id = c.order_id
-        GROUP BY 1,2
-    ) t ON o.order_id = t.order_id
-    SET
-        o.total_amount = ROUND(t.new_total, 2),
-        o.delivery_cost =
-       CASE
-           WHEN t.new_total = 0 THEN 0
-           WHEN t.loyalty_member THEN CASE
-                                          WHEN t.new_total >= 50 THEN 0
-                                          WHEN t.new_total >= 25 THEN 5
-                                          ELSE 10
-                                      END
-           ELSE CASE
-                    WHEN t.new_total >= 75 THEN 0
-                    WHEN t.new_total >= 50 THEN 5
-                    WHEN t.new_total >= 25 THEN 10
-                    ELSE 25
-                END
-       END;
-
-END $$
-
-DELIMITER ;
-```
-
-### Validation Query
-
-```sql
--- check order.total_amount and order.delivery_cost columns
-SELECT o.order_id,
-       o.total_amount,
-       SUM(CASE
-               WHEN oi.item_status != 'Canceled' THEN oi.line_total
-               ELSE 0
-           END) AS expected_total,
-       o.delivery_cost,
-       CASE
-           WHEN o.total_amount = 0 THEN 0
-           WHEN c.loyalty_member THEN CASE
-                                          WHEN o.total_amount >= 50 THEN 0
-                                          WHEN o.total_amount >= 25 THEN 5
-                                          ELSE 10
-                                      END
-           ELSE CASE
-                    WHEN o.total_amount >= 75 THEN 0
-                    WHEN o.total_amount >= 50 THEN 5
-                    WHEN o.total_amount >= 25 THEN 10
-                    ELSE 25
-                END
-       END expected_delivery_cost
-FROM orders o
-JOIN customers c ON o.customer_id = c.customer_id
-JOIN order_items oi ON o.order_id = oi.order_id
-GROUP BY o.order_id
-HAVING o.total_amount != expected_total
-OR o.delivery_cost != expected_delivery_cost;
-```
-
-**0 row(s) returned**
-
-</details>  
-</br>
-
-`tmart.customer.gender` - add gender to the customer profile
-
-<details>
-<summary>Expand to view details.</summary>
-
-```sql
-ALTER TABLE tmart.customers ADD COLUMN gender CHAR(1) NULL AFTER last_name;
-
-SELECT DISTINCT first_name,
-                gender
-FROM customers;
-
-
-UPDATE customers
-SET gender = 'M'
-WHERE first_name IN ('Andrew', 'Charles', 'Christopher', 'Daniel',
-                     'David', 'James', 'Jason', 'John', 'Joseph',
-                     'Liam', 'Matthew', 'Michael', 'Randy',
-                     'Richard', 'Robert', 'Thomas', 'William');
-
-
-UPDATE customers
-SET gender = 'F'
-WHERE first_name NOT IN ('Andrew', 'Charles', 'Christopher', 'Daniel',
-                         'David', 'James', 'Jason', 'John', 'Joseph',
-                         'Liam', 'Matthew', 'Michael', 'Randy',
-                         'Richard', 'Robert', 'Thomas', 'William');
-```
-
-</details>  
 
 ## :flashlight: Examine the Data (work in progress)
 
