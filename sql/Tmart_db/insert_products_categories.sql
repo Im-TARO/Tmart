@@ -79,7 +79,7 @@ VALUES
 (6, 'Bottles and Cups', 'Bottles, cups, tableware'),
 (6, 'Toys', 'Toys'),
 (6, 'Bathing and Skin Care', 'Creams, ointments, shampoo, soap, lotion'),
-(6, 'Health & Wellnes', 'Laundry, medicine, pacifiers, oral care');
+(6, 'Health and Wellness', 'Laundry, medicine, pacifiers, oral care');
 
 
 

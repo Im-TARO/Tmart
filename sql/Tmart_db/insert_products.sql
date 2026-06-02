@@ -72,36 +72,3 @@ SELECT
   COUNT(*)
 FROM
   products;
-
-/* export data */
-SELECT
-  'product_id',
-  'category',
-  'subcategory',
-  'name',
-  'brand',
-  'sku',
-  'unit_size',
-  'price',
-  'stock_quantity',
-  'is_active',
-  'date_created',
-  'date_updated'
-UNION
-SELECT
-  p.product_id,
-  c.name,
-  s.name,
-  p.name,
-  p.brand,
-  p.sku,
-  p.unit_size,
-  p.price,
-  p.stock_quantity,
-  p.is_active,
-  p.date_created,
-  p.date_updated INTO OUTFILE '<path>/tmart_products_export.csv' FIELDS TERMINATED BY ','
-FROM
-  products p
-  JOIN products_subcategories s ON p.subcategory_id = s.subcategory_id
-  JOIN products_categories c ON s.category_id = c.category_id;
