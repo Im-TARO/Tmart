@@ -2,12 +2,12 @@
 
 # Welcome to the Tmart Project
 
-![Data](https://img.shields.io/badge/Data-Synthetic-white?style=plastic&logoColor=white&logoSize=auto&labelColor=orange)
-![MySQL](https://img.shields.io/badge/MySQL-Database-white?style=plastic&logo=mysql&logoColor=white&logoSize=auto&labelColor=blue)
-![Python](https://img.shields.io/badge/Python-Language-white?style=plastic&logo=python&logoColor=white&logoSize=auto&labelColor=yellow)
-![Tableau](https://img.shields.io/badge/Tableau-Visualization-white?style=plastic&logoColor=white&logoSize=auto&labelColor=blue)
-![Excel](https://img.shields.io/badge/Excel-Tool-white?style=plastic&logoColor=white&logoSize=auto&labelColor=green)
-![Dataoi](https://img.shields.io/badge/draw.io-Tool-white?style=plastic&logoColor=white&logoSize=auto&labelColor=orange)
+![Data](https://img.shields.io/badge/Data-Synthetic-gray?style=plastic&logoColor=white&logoSize=auto&labelColor=orange)
+![MySQL](https://img.shields.io/badge/MySQL-Database-gray?style=plastic&logo=mysql&logoColor=white&logoSize=auto&labelColor=blue)
+![Python](https://img.shields.io/badge/Python-Language-gray?style=plastic&logo=python&logoColor=white&logoSize=auto&labelColor=yellow)
+![Tableau](https://img.shields.io/badge/Tableau-Visualization-gray?style=plastic&logoColor=white&logoSize=auto&labelColor=blue)
+![Excel](https://img.shields.io/badge/Excel-Tool-gray?style=plastic&logoColor=white&logoSize=auto&labelColor=green)
+![Dataoi](https://img.shields.io/badge/draw.io-Tool-gray?style=plastic&logoColor=white&logoSize=auto&labelColor=orange)
 
 # :pushpin: Overview
 
@@ -263,7 +263,7 @@ Insert into `tmart.product_categories` and `tmart.product_subcategories`
 
 ### Asked ChatGPT to create Python scripts to create synthetic data
 
-I reviewed and tailored the scripts to better meet my needs.
+Reviewed and tailored the scripts to better meet my needs.
 
 <details>
 <summary>Expand to view details</summary>
@@ -486,7 +486,7 @@ Make the database ready for analytics, enabling BI reporting and dashboards.
 - [Source Data](#source-data)
 - [Staging Raw Layer](#1-staging-raw-layer)
 - [Staging Intermediate Layer](#2-staging-intermediate-layer)
-- [Dimensional Model](#3-dimensional-model)
+- [Dimensional Layer](#3-dimensional-layer)
 
 ## Overview
 
@@ -499,21 +499,19 @@ Note: All source data is synthetic, generated via a Python script.
 | Tech Stack | MySQL, Python |
 | Source Data | cvs files (exported from Tmart DB) |
 | Staging Schema | tmart_staging (raw & intermediate) |
-| Analytics Schema | tmart_analytics (analytics-ready) |
+| Analytics Schema | tmart_analytics (dimensional) - analytics-ready |
 | Data Type | Synthetic - generated via Python |
 
 </div>
-
-### General Rules
-
-- Naming Conventions: Use snakecase
-- Avoid Reserved Words: Do not use SQL reserved words
 
 <br>
 
 ![HighLevelArch](images/HighLevelArchitechture.jpg)
 
 ## Source Data
+
+**Table Relationships**
+![SourceData](images/Source_Data.jpg)
 
 ### Files & Row Counts
 
@@ -529,8 +527,6 @@ Note: All source data is synthetic, generated via a Python script.
 | tmart_products_categories.csv | Category reference | 6 |
 
 </div>
-
-![SourceData](images/Source_Data.jpg)
 
 ### Date Range
 
@@ -556,20 +552,14 @@ The raw staging tables (tmart_raw_*) act as a landing zone for source data, no c
 **Data Flow**  
 ![DataFlow1](images/Raw_DataFlow.jpg)
 
-## Rules
-
-- All tables names must start with the source DB name followed by \_raw\_
-- <DB name>\_raw\_\<entity\>
-  - Example: tmart_raw_customers - customer table from the tmart DB
-
 ## Tables of Contents
 
-- [Analysis](#1a-analysis)
-- [Create Raw Tables](#1b-create-raw-tables)
-- [Data Load](#1c-data-load)
-- [Validataion](#1d-validation)
+- [Analysis](#1-analysis)
+- [Create Raw Tables](#1-create-raw-tables)
+- [Data Load](#1-data-load)
+- [Validataion](#1-validation)
 
-### 1a. Analysis
+### 1. Analysis
 
 ![SourceData](images/Raw_Layer.jpg)
 
@@ -582,19 +572,17 @@ The raw staging tables (tmart_raw_*) act as a landing zone for source data, no c
 | tmart_products_categories.csv | 6 | category_id, name, description |
 | tmart_products_subcategories.cvs | 40 | subcategory_id, category_id, name, description |
 
-### 1b. Create Raw Tables
+### 1. Create Raw Tables
 
 [__Click to view the DDL__](sql/staging_raw/create_raw_tables.sql)
 
-### 1c. Data Load
+### 1. Data Load
 
 #### Refreshing the raw tables
 
 [__Click to view the DML__](sql/staging_raw/load_raw_tables.sql)
 
-### 1d. Validation
-
-<ins>__Check Number of Rows__</ins>
+### 1. Validation
 
 | File | # rows file | Table | # rows in DB | column names match |
 | --- | ---: | --- | ---: | :---: |
@@ -623,22 +611,22 @@ The intermediate staging tables (tmart_int_*) store cleaned and standardized dat
 
 ## Tables of Contents
 
-- [Analyze](#2a-analyze)
-- [Create Tables](#2b-create-tables)
-- [Data Cleaning & Load](#2c-data-cleansing--load)
-- [Validataion](#2d-validation)
+- [Analyze](#2-analyze)
+- [Create Tables](#2-create-tables)
+- [Data Cleaning & Load](#2-data-cleansing--load)
+- [Validataion](#2-validation)
 
-### 2a. Analyze
+### 2. Analyze
 
 #### Table Relationships (Raw Layer)
 
 ![RawData](images/Raw_Data.jpg)
 
-### 2b. Create Tables
+### 2. Create Tables
 
 [__Click to view the DDL__](sql/staging_int/create_int_tables.sql)
 
-### 2c. Data Cleansing & Load
+### 2. Data Cleansing & Load
 
 [__Click to view the DML__](sql/staging_int/load_int_tables.sql)
 
@@ -657,112 +645,169 @@ The intermediate staging tables (tmart_int_*) store cleaned and standardized dat
 </div>
 
 
-### 2d. Validation
+### 2. Validation
 [__Click to view the Validation__](sql/staging_int/int_validation.sql)
 
 </details>
 
-## 3. Dimensional Model
+## 3. Dimensional Layer
 
-A star schema is built on top of the staging layer to optimize query performance and simplify dashboard development.
+A star schema is built using the staging layer to optimize query performance and simplify dashboard development.
+
+<details>
+<summary>Expand to view details.</summary>
+
+<br>
+
+**Data Flow**  
+![DataFlow1](images/Dim_DataFlow.jpg)
+
+## Tables of Contents
+
+- [Create Tables](#3-create-tables)
+- [Load Calendar Table](#3-load-dates-dimension-table)
+- [Validataion](#3-validation)
+- [Data Catalog](#3-data-catalog)
+
+
+### 3. Create Tables
+
+[__Click to view the DDL__](sql/dimensional/create_star_schema.sql)
+
+### 3. Load Dates (dimension table)
+
+[__Click to view the DML__](sql/dimensional/load_dim_date.sql)
+
+### 3. Validation
+[__Click to view the Validation__](sql/dimensional/dim_validataion.sql)
+
+### 3. Data Model
+
+![StarSchema](images/Star_Schema.jpg)
+
+### 3. Data Catalog
+
+- Business focused data model, for analytics and reporting
+- Dimensional model composed of fact and dimension tables
+
+#### `dim_customers`
+
+- Stores customer details
+
+<details>
+<summary>Expand to view columns.</summary>
+
+| Column Name | Data Type | Description |
+| --- | --- | --- |
+| `customer_key` | int | Customer dimension surrogate key |
+| `customer_id` | int | Unique identifier assigned to each customer |
+| `first_name` | varchar(50) | Customer's first name |
+| `last_name` | varchar(50) | Customer's last name |
+| `gender` | varchar(8) | Customer's gender (e.g., 'Male', 'Female', 'Other', 'Unknown') |
+| `phone_number` | varchar(12) | Customer's phone number |
+| `email_address` | varchar(255) | Customer's email address |
+| `street_address` | varchar(200) | Customer's street address |
+| `city` | varchar(100) | Customer's city |
+| `state` | char(2) | State of residence (e.g. 'NC') |
+| `zipcode` | varchar(10) | Customer's zipcode |
+| `county` | varchar(50) | County of residence (e.g. 'Wake') |
+| `birthdate` | date | Date of birth, formated as YYYY-MM-DD (e.g. 1990-01-31) |
+| `is_active` | tinyint | Customer is still active (e.g. 0, 1) |
+| `loyalty_member` | tinyint | Customer is a member of the loyalty program (e.g. 0, 1) |
+| `date_created` | date | Date customer record was created |
+| `date_inactive` | date | Date customer record became inactive |
+
+</details>
+
+#### `dim_products`
+
+- Stores product details
+
+<details>
+<summary>Expand to view columns.</summary>
+
+| Column Name | Data Type | Description |
+| --- | --- | --- |
+| `product_key` | int | Product dimension surrogate key |
+| `product_id` | int | Unique identifier assigned to each product |
+| `product_sku` | varchar(50) | Stock keeping unit |
+| `product_name` | varchar(300) | Name of product - 'Brand Name' + 'Product Type' |
+| `product_type` | varchar(300) | Type of product (e.g. 'Club Soda') |
+| `brand_name` | varchar(100) | Product company name (e.g. 'SunVale Farms') |
+| `subcategory_id` | int | Unique identifier assigned to each subcategory |
+| `category` | varchar(100) | Product's broad classification (e.g. 'Food and Beverages') |
+| `subcategory` | varchar(100) | Product's narrower classification (e.g. 'Produce') |
+| `unit_size` | varchar(50) | Quantity or measurement of product (e.g. '10 oz') |
+| `price` | decimal(10,2) | Selling price of product |
+| `stock_quantity` | int | Number of hand |
+| `is_active` | tinyint | Product is still active (e.g. 0, 1) |
+| `date_created` | date | Date product record was created |
+| `date_inactive` | date | Date product record became inactive |
+
+</details>
+
+#### `dim_date`
+
+- Calendar table
+
+<details>
+<summary>Expand to view columns.</summary>
+
+| Column Name | Data Type | Description |
+| --- | --- | --- |
+| `date_key` | int | Date dimension surrogate key: YYYYMMDD (e.g. '20250131') |
+| `date` | date | Date: YYYY-MM-DD |
+| `year` | int | Date's year: YYYY |
+| `quarter` | int | Fiscal quarter |
+| `month_name` | varchar(9) | Date's month name (e.g. 'January') |
+| `day_name` | varchar(9) | Date's weekday name (e.g. 'Monday') |
+| `is_weekend` | tinyint | Date falls on a weekend (e.g. 0, 1) |
+| `is_holiday` | tinyint | Date is a holiday (e.g. 0, 1) |
+
+</details>
+
+#### `fact_orders`
+
+- Stores orders, transactional data
+
+<details>
+<summary>Expand to view columns.</summary>
+
+| Column Name | Data Type | Description |
+| --- | --- | --- |
+| `order_id` | int | Unique identifier assigned to each order |
+| `order_item_id` | int | Unique identifier assigned to each item on the order |
+| `product_key` | int | Surrogate key link to the product dimension table |
+| `customer_key` | int | Surrogate key link to the customer dimension table |
+| `order_date_key` | int | Surrogate key link to the date dimension table |
+| `ship_date_key` | int | Surrogate key link to the date dimension table |
+| `delivered_date_key` | int | Surrogate key link to the date dimension table |
+| `canceled_date_key` | int | Surrogate key link to the date dimension table |
+| `order_datetime` | datetime | Datetime order was placed |
+| `ship_datetime` | datetime | Datetime line item was shipped |
+| `delivered_datetime` | datetime | Datetime line item was delivered |
+| `canceled_datetime` | datetime | Datetime line item was canceled |
+| `delivery_fee` | decimal(10,2) | Amount charged for delivery |
+| `quantity` | int | Number of units ordered (e.g. 1) |
+| `unit_price` | decimal(10,2) | Cost per unit or product  (e.g. 0, 4.39) |
+| `line_total` | decimal(10,2) | Total price for the line item (e.g. 4.39) |
+| `item_status` | varchar(50) | Status of the line item (e.g 'SHIPPED') |
+
+</details>
+
+</details>
+
+</details>
+
+<br><br>
+
+# :telescope: Exploratory Data Analysis (EDA)
 
 <details>
 <summary>Expand to view details.</summary>
 
 ![coming soon](images/torn_coming_soon.jpg)
 [Designed by Freepik](www.freepik.com)
-
-<!--
-**Fact Tables**
-
-<ins>fact_orders</ins> - Order header grain (one row per order)
-
-<div align="center">
-
-| Column | Type | Source | Notes |
-| -- | -- | -- | -- |
-| order_id | INT | orders.order_id | Primary key |
-| customer_id | INT | orders.customer_id | FK → dim_customer |
-| date_key | INT | Derived from order_date | FK → dim_date |
-| total_amount | DECIMAL | orders.total_amount | Product revenue only |
-| delivery_cost | DECIMAL | orders.delivery_cost | Customer-facing delivery fee |
-| gross_revenue | DECIMAL | total_amount + delivery_cost | Derived field |
-
-</div>
-
-<ins>fact_order_items</ins> - Order item grain (one row per item)
-
-<div align="center">
-
-| Column | Type | Source | Notes |
-| -- | -- | -- | -- |
-| order_item_id | INT | order_items | Primary key |
-| order_id | INT | order_items | FK → fact_orders |
-| product_id | INT | order_items | FK → dim_product |
-| ship_date_key | INT | Derived from ship_date | FK → dim_date |
-| delivered_date_key | INT | Derived from delivered_date | FK → dim_date |
-| quantity | INT | order_items.quantity | |
-| unit_price | DECIMAL | order_items.unit_price | Actual sell price |
-| line_total | DECIMAL | order_items.line_total | |
-| item_status | VARCHAR | order_items.item_status | Standardized |
-| is_canceled | TINYINT | Derived | 1 if canceled |
-| days_to_ship | INT | ship_date - order_date | Derived |
-| days_to_deliver | INT | delivered_date - ship_date | Derived |
-
-</div>
-
-**Dimension Tables**
-
-<ins>dim_customer</ins>
-
-<div align="center">
-
-| Column | Type | Source | Notes |
-| -- | -- | -- | -- |
-| customer_id | INT | customers.customer_id | Primary key |
-| gender | VARCHAR | stg_customers.gender | Standardized to uppercase |
-| city | VARCHAR | stg_customers.city | |
-| state | VARCHAR | stg_customers.state | Standardized to uppercase |
-| age | INT | Derived from dob | Calculated at query time |
-| age_group | VARCHAR | Derived from age | Under 25, 25-34, etc. |
-| is_active | TINYINT | Derived | 1 if date_inactive IS NULL |
-
-</div>
-
-<ins>dim_product</ins>
-
-<div align="center">
-
-| Column | Type | Source | Notes |
-| -- | -- | -- | -- |
-| product_id | INT | products.product_id | Primary key |
-| name | VARCHAR | products.name | |
-| brand | VARCHAR | products.brand | |
-| list_price | DECIMAL | products.price | Catalog price |
-| subcategory_name | VARCHAR | product_subcategories.name | Denormalized |
-| category_name | VARCHAR | product_categories.name | Denormalized |
-| is_active | TINYINT | Derived from date_inactive | |
-
-</div>
-
-<ins>dim_date</ins>
-
-<div align="center">
-
-| Column | Type | Notes |
-| -- | -- | -- |
-| date_key | INT | YYYYMMDD format (e.g. 20240115) |
-| date | DATE | Actual date |
-| year | INT | |
-| quarter | INT | 1-4 |
-| month_name | VARCHAR | January, February, etc. |
-| day_name | VARCHAR | Monday, Tuesday, etc. |
-| is_weekend | TINYINT | 1 if Saturday or Sunday |
-| is_holiday | TINYINT | 1 if US public holiday |
-
-</div>
--->
-</details>
 
 </details>
 
