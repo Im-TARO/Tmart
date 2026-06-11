@@ -66,6 +66,9 @@ ChatGPT was used to accelerate the data generation.
   <tr>
     <td align="center" width="50%">
       <h2>🔭 Exploratory Data Analysis</h2>
+<!--      
+   🔗 <a href="docs/exploratory_data_analysis.md">Documentation</a><br/>
+-->
       <img src="images/torn_coming_soon.jpg"
            alt="Coming Soon"
            style="width:35%; height:100px; object-fit:contain;"/><br/>

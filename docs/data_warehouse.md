@@ -83,7 +83,7 @@ The raw staging tables (tmart_raw_*) act as a landing zone for source data, no c
             <a href="../images/Raw_Layer.jpg">
             <img src="../images/Raw_Layer.jpg"
                 alt="Tmart Project"
-                style="width:100%; height:300px; object-fit:scale-down;"/>
+                style="width:80%; height:200px; object-fit:fit;"/>
             </a>
             <br/>
             <table>
@@ -95,22 +95,22 @@ The raw staging tables (tmart_raw_*) act as a landing zone for source data, no c
               <tr>
                 <td valign=top>tmart_customers.csv</td>
                 <td valign=top>300</td>
-                <td>customer_id, first_name, last_name, gender, phone_number, email, address, city, state, zipcode, county, dob, is_active, loyalty_member, date_created, date_inactive, date_updated</td>
+                <td>customer_id, first_name, last_name,<br>gender, phone_number, email,<br>address, city, state, zipcode,<br>county, dob, is_active, loyalty_member,<br>date_created, date_inactive, date_updated</td>
               </tr>
               <tr>
                 <td valign=top>tmart_order_items.csv</td>
                 <td valign=top>45,473</td>
-                <td>order_item_id, order_id, product_id, quantity, unit_price, line_total, item_status, ship_date, delivered_date, canceled_date, <br> date_created, date_updated</td>
+                <td>order_item_id, order_id, product_id,<br>quantity, unit_price, line_total,<br>item_status, ship_date, delivered_date,<br>canceled_date,date_created, date_updated</td>
               </tr>
               <tr>
                 <td valign=top>tmart_orders.csv</td>
                 <td valign=top>10,200</td>
-                <td>order_id, customer_id, order_date, total_amount, delivery_cost, date_created, date_updated</td>
+                <td>order_id, customer_id, order_date,<br>total_amount, delivery_cost, <br>date_created, date_updated</td>
               </tr>
               <tr>
                 <td valign=top>tmart_products.csv</td>
                 <td valign=top>10,000</td>
-                <td>product_id, subcategory_id, name, brand, sku, unit_size, price, stock_quantity, is_active, date_created, date_inactive, date_updated</td>
+                <td>product_id, subcategory_id, name,<br>brand, sku, unit_size, price, <br>stock_quantity, is_active, date_created,<br>date_inactive, date_updated</td>
               </tr>
               <tr>
                 <td valign=top>tmart_products_categories.csv</td>
@@ -225,7 +225,7 @@ The intermediate staging tables (tmart_int_*) store cleaned and standardized dat
             <a href="../images/Raw_Data.jpg">
             <img src="../images/Raw_Data.jpg"
                 alt="Raw Data"
-                style="width:100%; height:300px; object-fit:scale-down;"/>
+                style="width:80%; height:200px; object-fit:fit;"/>
             </a>
         </td>
     </tr>
@@ -357,7 +357,7 @@ A star schema is built using the staging layer to optimize query performance and
             <a href="../images/Star_Schema.jpg">
             <img src="../images/Star_Schema.jpg"
                 alt="Star Schema"
-                style="width:100%; height:300px; object-fit:scale-down;"/>
+                style="width:80%; height:300px; object-fit:scale-down;"/>
             </a>
         </td>
     </tr>    
