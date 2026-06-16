@@ -225,7 +225,7 @@ The intermediate staging tables (tmart_int_*) store cleaned and standardized dat
             <a href="../images/Raw_Data.jpg">
             <img src="../images/Raw_Data.jpg"
                 alt="Raw Data"
-                style="width:80%; height:200px; object-fit:fit;"/>
+                style="width:70%; height:400px; object-fit:fit;"/>
             </a>
         </td>
     </tr>
@@ -392,6 +392,7 @@ A star schema is built using the staging layer to optimize query performance and
 | `zipcode` | varchar(10) | Customer's zipcode |
 | `county` | varchar(50) | County of residence (e.g. 'Wake') |
 | `birthdate` | date | Date of birth, formated as YYYY-MM-DD (e.g. 1990-01-31) |
+| `age` | int | Customer's age (e.g. 24) |
 | `is_active` | tinyint | Customer is still active (e.g. 0, 1) |
 | `loyalty_member` | tinyint | Customer is a member of the loyalty program (e.g. 0, 1) |
 | `date_created` | date | Date customer record was created |
@@ -464,10 +465,10 @@ A star schema is built using the staging layer to optimize query performance and
 | `delivered_date_key` | int | Surrogate key link to the date dimension table |
 | `canceled_date_key` | int | Surrogate key link to the date dimension table |
 | `order_datetime` | datetime | Datetime order was placed |
+| `order_delivery_fee` | decimal(10,2) | Amount charged for delivery of order (all items) |
 | `ship_datetime` | datetime | Datetime line item was shipped |
 | `delivered_datetime` | datetime | Datetime line item was delivered |
 | `canceled_datetime` | datetime | Datetime line item was canceled |
-| `delivery_fee` | decimal(10,2) | Amount charged for delivery |
 | `quantity` | int | Number of units ordered (e.g. 1) |
 | `unit_price` | decimal(10,2) | Cost per unit or product  (e.g. 0, 4.39) |
 | `line_total` | decimal(10,2) | Total price for the line item (e.g. 4.39) |
