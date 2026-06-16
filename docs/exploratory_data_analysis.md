@@ -7,6 +7,7 @@
 - [Date Exploration](#date-exploration)
 - [Key metrics report](#key-metrics-report)
 - [Magnitude Analysis](#magnitude-analysis)
+- [Ranking Analysis](#ranking-analysis)
 
 ## Dimensions & Measures (by table)
 
