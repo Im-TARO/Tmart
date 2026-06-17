@@ -66,7 +66,9 @@ CREATE TABLE dim_date (
   year int DEFAULT NULL,
   quarter int DEFAULT NULL,
   month_name varchar(9) DEFAULT NULL,
+  month_sort int default NULL,
   day_name varchar(9) DEFAULT NULL,
+  day_sort int default NULL,
   is_weekend tinyint DEFAULT NULL,
   is_holiday tinyint DEFAULT NULL,
   PRIMARY KEY (date_key)

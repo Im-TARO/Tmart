@@ -24,8 +24,8 @@ WITH RECURSIVE
 bounds AS (
     SELECT
         DATE_FORMAT(MIN(date_created), '%Y-%m-01') AS start_date,
-        LAST_DAY((SELECT GREATEST(MAX(o.order_date), MAX(o.canceled_date),
-                         MAX(o.delivered_date), MAX(o.ship_date))
+        LAST_DAY((SELECT GREATEST(MAX(o.order_datetime), MAX(o.canceled_datetime),
+                         MAX(o.delivered_datetime), MAX(o.ship_datetime))
          FROM fact_orders o
          )) AS end_date
     FROM dim_customers
@@ -143,12 +143,14 @@ fixed_holidays AS (
                     holidays correctly flag the observed day
    ============================================================ */
 SELECT
-    DATE_FORMAT(d.dates, '%Y%m%d')   AS date_key,    -- Surrogate key: YYYYMMDD integer format
-    DATE(d.dates)                    AS date,
-    YEAR(d.dates)                    AS year,
-    QUARTER(d.dates)                 AS quarter,
-    MONTHNAME(d.dates)               AS month_name,
-    DAYNAME(d.dates)                 AS day_name,
+    DATE_FORMAT(d.dates, '%Y%m%d')   date_key,    -- Surrogate key: YYYYMMDD integer format
+    DATE(d.dates)                    date,
+    YEAR(d.dates)                    year,
+    QUARTER(d.dates)                 quarter,
+    MONTHNAME(d.dates)               month_name,
+    MONTH(d.dates)                   month_sort,
+    DAYNAME(d.dates)                 day_name,
+    DAYOFWEEK(d.dates)               day_sort,
 
     -- Weekend flag: 1 = Saturday (7) or Sunday (1)
     CASE WHEN DAYOFWEEK(d.dates) IN (1, 7) THEN 1 ELSE 0 END AS is_weekend,

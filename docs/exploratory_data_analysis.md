@@ -1,5 +1,16 @@
 # :telescope: Exploratory Data Analysis using SQL
 
+## :high_brightness: Insights
+
+### About the Data
+
+| | |
+| --- | --- |
+| Customer mix | - The oldest customer is 86 and the youngest is 20, 66 years of age difference<br>- Customer base is fairly balanced by gender, male customers slightly higher |
+| Dates | - Order history covers roughly 6 years (2026 is incomplete) |
+| Geographic coverage | - Data covers 5 counties and 15 cities<br>- Wake County is the largest geographic market |
+| Products | - There are 40 subcategories across 6 major category groups<br>- Food and Beverage contains the largest mix of subcategories<br>- Pet Care Products have the highest average price<br>- Food and Bererage has the lowest average price |
+
 ## Table of Contents
 
 - [Dimensions & Measures](#dimensions--measures-by-table)
