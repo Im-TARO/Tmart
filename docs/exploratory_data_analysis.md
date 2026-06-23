@@ -2,14 +2,16 @@
 
 ## :high_brightness: Insights
 
-### About the Data
+### Descriptive Analysis
 
-| | |
+| About the Data| |
 | --- | --- |
 | Customer mix | - The oldest customer is 86 and the youngest is 20, 66 years of age difference<br>- Customer base is fairly balanced by gender, male customers slightly higher |
 | Dates | - Order history covers roughly 6 years (2026 is incomplete) |
 | Geographic coverage | - Data covers 5 counties and 15 cities<br>- Wake County is the largest geographic market |
 | Products | - There are 40 subcategories across 6 major category groups<br>- Food and Beverage contains the largest mix of subcategories<br>- Pet Care Products have the highest average price<br>- Food and Bererage has the lowest average price |
+
+:link: [Data Visualizations](https://public.tableau.com/views/Tmart_EDA/AgeDistribution?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
 
 ## Table of Contents
 
@@ -241,25 +243,25 @@ SQL-based magnitude analysis - group and summarize data by dimensions to see dis
 
 ```sql
 -- Number of customers by county
-SELECT county, COUNT(customer_key) total_customers
+SELECT county, COUNT(customer_key) total_customers, SUM(is_active) active_customers
 FROM dim_customers
-GROUP BY county
+GROUP BY county 
 ORDER BY total_customers DESC;
 ```
 
 ### :arrows_counterclockwise: Result Grid
 
-| county | total_customers |
-| --- | --- |
-| Wake |181 |
-| Harnett | 60 |
-| Durham | 29 |
-| Lee | 17 |
-| Johnston | 13 |
+| county | total_customers | active_customers |
+| --- | --- | --- |
+| Wake |181 | 139 |
+| Harnett | 60 | 48 |
+| Durham | 29 | 22 |
+| Lee | 17 | 14 |
+| Johnston | 13 | 12 |
 
 ```sql
 -- Number of customers by gender
-SELECT gender, COUNT(customer_key) total_customers
+SELECT gender, COUNT(customer_key) total_customers, SUM(is_active) active_customers
 FROM dim_customers
 GROUP BY gender
 ORDER BY total_customers DESC;
@@ -267,10 +269,10 @@ ORDER BY total_customers DESC;
 
 ### :arrows_counterclockwise: Result Grid
 
-| gender | total_customers |
-| --- | --- |
-| Male | 160 |
-| Female | 140 |
+| gender | total_customers | active_customers |
+| --- | --- | --- |
+| Male | 160 | 128 |
+| Female | 140 | 107 |
 
 ```sql
 -- Avg price in each category
