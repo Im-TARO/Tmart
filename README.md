@@ -95,6 +95,7 @@ ChatGPT was used to accelerate the data generation.
 
 <div align="center">
 
+[![portfolio](images/sm_ChatGPT%20Image%20Aug%2021,%202025,%2006_15_03%20PM.png)](https://im-taro.github.io/portfolio/)
 [![LinkedIn](https://skillicons.dev/icons?i=linkedin&theme=dark&perline=15)](https://www.linkedin.com/in/robinsontd/)
 [![GitHub](https://skillicons.dev/icons?i=github&theme=dark&perline=15)](https://github.com/Im-TARO)
 [![Tableau](https://go-skill-icons.vercel.app/api/icons?i=tableau&theme=dark)](https://public.tableau.com/views/Tmart/Sheet1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
