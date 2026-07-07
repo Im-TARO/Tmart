@@ -1,4 +1,4 @@
-![logo](images/ChatGPT_Tmart_logo_sm.png)
+[![logo](images/ChatGPT_Tmart_logo_sm.png)](README.md)
 
 # Welcome to the Tmart Project
 
