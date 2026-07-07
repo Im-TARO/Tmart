@@ -1,3 +1,5 @@
+[![tmart logo](../images/ChatGPT_Tmart_logo_sm.png)](../README.md)
+
 # 🔎 Data Analytics
 
 | Key Insight | | |

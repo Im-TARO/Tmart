@@ -1,4 +1,6 @@
-# :telescope: Exploratory Data Analysis using SQL 
+[![tmart logo](../images/ChatGPT_Tmart_logo_sm.png)](../README.md)
+
+# :telescope: Exploratory Data Analysis using SQL
 
 ![Data](https://img.shields.io/badge/Data-Synthetic-gray?style=plastic&logoColor=white&logoSize=auto&labelColor=orange)
 
@@ -11,7 +13,35 @@
 | Geographic coverage | - Data covers 5 counties and 15 cities<br>- Wake County is the largest geographic market |
 | Products | - There are 40 subcategories across 6 major category groups<br>- Food and Beverage contains the largest mix of subcategories<br>- Pet Care Products have the highest average price<br>- Food and Bererage has the lowest average price |
 
-:link: [Data Visualizations](https://public.tableau.com/views/Tmart_EDA/AgeDistribution?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="../images/EDA_Age_Distribution.png" width="50%" alt="Age Distribution">
+      <br>
+      🔗 <a href="https://public.tableau.com/views/Tmart_EDA/AgeDistribution?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link">Age Distribution</a>  
+    </td>
+    <td align="center" width="50%">
+      <img src="../images/EDA_County_Distribution.png" width="100%" alt="County Distribution">
+      <br>    
+      🔗 <a href="https://public.tableau.com/views/Tmart_EDA/CountyDistribution?:language=en-US&:sid=&:display_count=n&:origin=viz_share_link">County Distribution</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center" width="50%">
+      <img src="../images/EDA_Customer_Growth.png" width="100%" alt="Customer Growth">
+      <br>
+      🔗 <a href="https://public.tableau.com/views/Tmart_EDA/CustomerGrowth?:language=en-US&:sid=&:display_count=n&:origin=viz_share_link">Customer Growth</a>  
+    </td>
+    <td align="center" width="50%">
+      <img src="../images/EDA_Avg_Selling_Price.png" width="100%" alt="Avg Selling Price">
+      <br>    
+      🔗 <a href="https://public.tableau.com/views/Tmart_EDA/AverageSellingPrice?:language=en-US&:sid=&:display_count=n&:origin=viz_share_link">Average Selling Price</a>
+    </td>
+  </tr>
+</table>
+
+
 
 ## Table of Contents
 

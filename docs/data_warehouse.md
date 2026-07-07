@@ -1,3 +1,5 @@
+[![tmart logo](../images/ChatGPT_Tmart_logo_sm.png)](../README.md)
+
 # :star: SQL Data Warehouse
 
 Make the database ready for analytics, enabling BI reporting and dashboards.
