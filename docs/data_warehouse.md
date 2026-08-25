@@ -9,8 +9,9 @@ Make the database ready for analytics, enabling BI reporting and dashboards.
 - [Overview](#overview)
 - [Source Data](#source-data)
 - [Staging Raw Layer](#staging-raw-layer)
-- [Staging Intermediate Layer](#2-staging-intermediate-layer)
-- [Dimensional Layer](#3-dimensional-layer)
+- [Staging Intermediate Layer](#staging-intermediate-layer)
+- [Dimensional Layer](#dimensional-layer)
+- [Known Issues & Assumptions](#know-issues--assumptions)
 
 ## Overview
 
@@ -205,7 +206,7 @@ The raw staging tables (tmart_raw_*) act as a landing zone for source data, no c
 </details>
 <br>
 
-## 2. Staging Intermediate Layer
+## Staging Intermediate Layer
 
 The intermediate staging tables (tmart_int_*) store cleaned and standardized data.
 
@@ -307,7 +308,7 @@ The intermediate staging tables (tmart_int_*) store cleaned and standardized dat
 
 </details>
 
-## 3. Dimensional Layer
+## Dimensional Layer
 
 A star schema is built using the staging layer to optimize query performance and simplify dashboard development.
 
@@ -479,3 +480,11 @@ A star schema is built using the staging layer to optimize query performance and
 </details>
 
 </details>
+
+## Know Issues & Assumptions
+
+| # | Issue / Assumption | Impact | Status | 
+| --- | --- | --- | --- |
+| 1 | All data is synthetic - no real customer PPI | None | Accepted |
+| 2 | data_inactive = NULL means currently active | Drives in_active flag | Accepted |
+| 3 | Price variance (+-10%) simulates promotions | | Accepted |

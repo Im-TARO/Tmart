@@ -69,7 +69,7 @@ ChatGPT was used to accelerate the data generation.
       <p>Understand the data</p><br>
    🔗 <a href="docs/exploratory_data_analysis.md">Documentation</a><br/>
       <br/>
-      <sub>MySQL</sub>   
+      <sub>MySQL, Tableau</sub>   
     </td>
     <td align="center" width="50%">
       <h2>📊 Business Intelligence</h2>
@@ -82,10 +82,10 @@ ChatGPT was used to accelerate the data generation.
   <tr>
     <td align="center" width="50%">
       <h2>🔎 Data Analytics</h2>
-      <img src="images/torn_coming_soon.jpg"
-           alt="Coming Soon"
-           style="width:35%; height:100px; object-fit:contain;"/><br/>
-      <sub><a href="https://www.magnific.com/free-vector/torn-style-coming-soon-promo-template-social-media-post_373055035.htm">Image by starline on Magnific</sub>
+      <p>Answer business questions</p><br>
+   🔗 <a href="docs/data_analytics.md">Documentation</a><br/>
+      <br/>
+      <sub>MySQL, Tableau</sub>       
     </td>
   </tr>  
 </table>
